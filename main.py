@@ -5,9 +5,10 @@ from pygame.locals import *
 
 
 class Node:
-    def __init__(self, (x, y)):
-        self.x = x
-        self.y = y
+    def __init__(self, (_x, _y), _id):
+        self.x = _x
+        self.y = _y
+        self.id = _id
         self.moving = False
         # self.colour = (0, 0, 255)
         # self.thickness = 10
@@ -15,14 +16,17 @@ class Node:
     def genLabel(self):
         self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
         self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
+        self.labelId = myFont.render("ID: " + str(self.id), 2, (0, 0, 0))
 
     def display(self):
         # pygame.draw.circle(screen, self.colour, (self.x, self.y), self.size, self.thickness)
         if self.moving:
             self.moveMode()
+        self.genLabel()
         screen.blit(nodeImg, (self.x, self.y))
         screen.blit(self.labelX, (self.x - 21, self.y - 30))
         screen.blit(self.labelY, (self.x - 21, self.y - 10))
+        screen.blit(self.labelId, (self.x - 21, self.y - 50))
 
     def moveMode(self):
         # print("Move Mode")
@@ -49,8 +53,21 @@ class Member:
         self.endTup = (mouseX, mouseY)
         (self.x, self.y) = self.endTup
 
+def worldLabelDisplay():
+    nodeLengthLabel=myFont.render("Number of Nodes: "+ str(len(nodeList)),2, (0, 0, 0))
+    memberLengthLabel=myFont.render("Number of Members: "+ str(len(memberList)),2, (0, 0, 0))
+    gameModeLabel=myFont.render("Game Mode: "+ str(programMode),2, (0, 0, 0))
+
+    screen.blit(nodeLengthLabel,(10,10))
+    screen.blit(memberLengthLabel,(10,30))
+    screen.blit(gameModeLabel, (10, 50))
+
+
 
 def checkCollide(classList, x, y):
+    var=classList.__class__.__name__
+    if(var!="list"):
+        classList=[classList]
     for p in classList:
         if math.hypot(p.x - x, p.y - y) <= 50:
             return p
@@ -61,7 +78,8 @@ def nodeBuilder():
     collidedNode = checkCollide(nodeList, mouseX, mouseY)  # checks to see mouse pos in relation to a node
     # print("Mouse Pressed")
     if not collidedNode:  # if the variable DOES NOT exist then add a new Node
-        nodeList.append(Node((mouseX - 21, mouseY - 21)))
+        nodeListLength = len(nodeList)
+        nodeList.append(Node((mouseX - 21, mouseY - 21), nodeListLength))
         # print("New node added")
     else:
         collidedNode.moving = not collidedNode.moving
@@ -76,6 +94,7 @@ def memberBuilder():
     if not collidedMember:
         nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21)))
         if nodeInInterest:
+            print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
             memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21)))
     else:
         collidedMember.moving = not collidedMember.moving
@@ -86,10 +105,10 @@ def memberBuilder():
 
 
 def memberSnapToNode(memberToCheck):
-    mem = [memberToCheck]
     for p in nodeList:
-        nodeInInterest = checkCollide(mem, p.x, p.y)
-        return nodeInInterest
+        nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
+        if nodeInInterest:
+            return p
     return None
 
 
@@ -107,7 +126,7 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 nodeDict = {}
-programMode = 1  # mode 0:Node Building
+programMode = 0  # mode 0:Node Building
 # mode 1: Member Connecting
 
 done = False
@@ -146,7 +165,7 @@ while not done:
     for m in memberList:
         m.display()
     for p in nodeList:
-        p.genLabel()
         p.display()
+    worldLabelDisplay()
     pygame.display.flip()
     clock.tick(60)
