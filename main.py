@@ -176,6 +176,8 @@ checkForDelete = False
 nodeList.append(Node((500, 100), 0))
 nodeList.append(Node((500, 300), 1))
 nodeList.append(Node((300, 200), 2))
+nodeList.append(Node((300, 300), 3))
+nodeList.append(Node((400, 600), 3))
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
