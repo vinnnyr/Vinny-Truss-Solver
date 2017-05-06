@@ -37,10 +37,12 @@ class Node:
 
 
 class Member:
-    def __init__(self, startTup, _id):
-        self.startTup = startTup
+    def __init__(self, startNode, _id):
+        self.startNode=startNode
+        self.startTup = (startNode.x, startNode.y)
         self.id = _id
         (self.x, self.y) = self.startTup
+
         self.moving = True
         # print("Member Created")
 
@@ -136,6 +138,13 @@ def memberBuilder():
                     # memToDel = memberList.index(collidedMember)
                     # return memToDel
                     # return None
+def memberBuilder2():
+    collidedNode=checkCollide(nodeList,mouseX,mouseY)
+    if collidedNode:
+        memberList.append(Member(collidedNode,len(memberList)))
+        print("Started at: " +str(collidedNode.id))
+
+
 
 
 def memberSnapToNode(memberToCheck):
@@ -192,8 +201,8 @@ while not done:
                 else:
                     checkForDelete = True
             elif programMode == 1:
-                memberBuilder()
-                debugger()
+                memberBuilder2()
+                #debugger()
         if event.type == pygame.KEYDOWN:
             if programMode == 0 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
