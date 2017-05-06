@@ -66,7 +66,7 @@ def checkCollide(classList, x, y):
         classList = [classList]
     list = []
     for p in classList:
-        if abs(math.hypot(p.x - x, p.y - y)) <= 84:
+        if abs(math.hypot(p.x - x, p.y - y)) <= 42:
             list = list + [p]
     if len(list) == 0:
         return None
@@ -81,10 +81,14 @@ def worldLabelDisplay():
     nodeLengthLabel = myFont.render("Number of Nodes: " + str(len(nodeList)), 2, (0, 0, 0))
     memberLengthLabel = myFont.render("Number of Members: " + str(len(memberList)), 2, (0, 0, 0))
     gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
+    mouseLabelX=myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
+    mouseLabelY=myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
+    screen.blit(mouseLabelX, (mouseX,mouseY+10))
+    screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
 
 def nodeBuilder():
@@ -105,7 +109,7 @@ def nodeBuilder():
 
 def memberBuilder():
     def snapNode():
-        nodeInInterest = memberSnapToNode(Member((mouseX, mouseY), len(memberList)))
+        nodeInInterest = memberSnapToNode(Member((mouseX-21, mouseY-21), len(memberList)))
         if nodeInInterest:
             print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
             return nodeInInterest
@@ -155,11 +159,15 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 nodeDict = {}
-programMode = 0  # mode 0:Node Building
+programMode = 1  # mode 0:Node Building
 # mode 1: Member Connecting
 
 done = False
 checkForDelete = False
+
+nodeList.append(Node((500, 100), 0))
+nodeList.append(Node((500, 300), 1))
+nodeList.append(Node((300, 200), 2))
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -182,7 +190,7 @@ while not done:
                 checkForDelete = False
             elif event.key == pygame.K_1:
                 programMode = 1  # program mode 1: Truss Building
-            elif event.key == pygame.K_0:
+            elif event.key == pygame.K_2:
                 programMode = 0
 
     if programMode == 0:
