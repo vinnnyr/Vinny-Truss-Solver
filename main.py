@@ -3,6 +3,8 @@ import math
 import os
 from pygame.locals import *
 
+nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
+
 
 class Node:
     def __init__(self, (_x, _y), _id):
@@ -35,43 +37,55 @@ class Node:
 
 
 class Member:
-    def __init__(self, startTup):
-        self.startTup = startTup
-        (self.x, self.y) = self.startTup
+    def __init__(self, startNode, _id):
+        self.startNode = startNode
+        self.startTup = (startNode.x + 21, startNode.y + 21)
+        self.id = _id
         self.moving = True
+        (self.x, self.y) = self.startTup
         # print("Member Created")
 
     def display(self):
         if self.moving:
-            self.moveMode()
-        pygame.draw.line(screen, (100, 100, 110), self.startTup, self.endTup, 21)
+            self.color = (110, 110, 110)
+            self.endTup=(mouseX,mouseY)
+        else:
+            if self.endNode:
+                self.endTup=(self.endNode.x+21,self.endNode.y+21)
+            self.color = (100, 100, 100)
+        pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
-
-    def moveMode(self):
-        # print("Move Mode")
-        (self.x1, self.y1) = self.startTup
-        self.endTup = (mouseX, mouseY)
-        (self.x, self.y) = self.endTup
-
-def worldLabelDisplay():
-    nodeLengthLabel=myFont.render("Number of Nodes: "+ str(len(nodeList)),2, (0, 0, 0))
-    memberLengthLabel=myFont.render("Number of Members: "+ str(len(memberList)),2, (0, 0, 0))
-    gameModeLabel=myFont.render("Game Mode: "+ str(programMode),2, (0, 0, 0))
-
-    screen.blit(nodeLengthLabel,(10,10))
-    screen.blit(memberLengthLabel,(10,30))
-    screen.blit(gameModeLabel, (10, 50))
-
 
 
 def checkCollide(classList, x, y):
-    var=classList.__class__.__name__
-    if(var!="list"):
-        classList=[classList]
+    var = classList.__class__.__name__
+    if (var != "list"):
+        classList = [classList]
+    list = []
     for p in classList:
-        if math.hypot(p.x - x, p.y - y) <= 50:
-            return p
-    return None
+        if abs(math.hypot(p.x - x, p.y - y)) <= 42:
+            list = list + [p]
+    if len(list) == 0:
+        return None
+    elif (len(list) == 1):
+        var = list[0]
+        return var
+    else:
+        return list
+
+
+def worldLabelDisplay():
+    nodeLengthLabel = myFont.render("Number of Nodes: " + str(len(nodeList)), 2, (0, 0, 0))
+    memberLengthLabel = myFont.render("Number of Members: " + str(len(memberList)), 2, (0, 0, 0))
+    gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
+    mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
+    mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
+
+    screen.blit(gameModeLabel, (10, 10))
+    screen.blit(nodeLengthLabel, (10, 30))
+    screen.blit(memberLengthLabel, (10, 50))
+    screen.blit(mouseLabelX, (mouseX, mouseY + 10))
+    screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
 
 def nodeBuilder():
@@ -82,34 +96,79 @@ def nodeBuilder():
         nodeList.append(Node((mouseX - 21, mouseY - 21), nodeListLength))
         # print("New node added")
     else:
-        collidedNode.moving = not collidedNode.moving
-        indexToDel = nodeList.index(collidedNode)
+        if not checkCollide(memberList, mouseX, mouseY):
+            collidedNode.moving = not collidedNode.moving
+            indexToDel = nodeList.index(collidedNode)
         if collidedNode.moving:
             return indexToDel
         return None
 
 
-def memberBuilder():
-    collidedMember = checkCollide(memberList, mouseX, mouseY)
-    if not collidedMember:
-        nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21)))
-        if nodeInInterest:
-            print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
-            memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21)))
+# def memberBuilder():
+#     def snapNode():
+#         nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21), len(memberList)))
+#         if nodeInInterest:
+#             print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
+#             return nodeInInterest
+#         return False
+#
+#     collidedMember = checkCollide(memberList, mouseX, mouseY)
+#     if not collidedMember:
+#         nodeInInterest = snapNode()
+#         if nodeInInterest:
+#             print("start^")
+#             memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21), len(memberList)))
+#     else:
+#         if collidedMember.__class__.__name__ == "list":
+#             if (len(collidedMember) > 1):
+#                 collidedMember = collidedMember[0]
+#         memb = checkCollide(memberList, mouseX, mouseY)
+#         if memb:
+#             if collidedMember.moving:
+#                 nodeInInterest = snapNode()
+#                 if nodeInInterest:
+#                     print"end^"
+#                     collidedMember.moving = not collidedMember.moving
+#                     (collidedMember.x, collidedMember.y) = (nodeInInterest.x, nodeInInterest.y)
+#                     # memToDel = memberList.index(collidedMember)
+#                     # return memToDel
+#                     # return None
+def memberBuilder2():
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    if collidedNode:
+        memberList.append(Member(collidedNode, len(memberList)))
+        memInInterest=memberList[len(memberList)-1]
+        memInInterest.moving=True
+        print("Started at: " + str(collidedNode.id))
+        makingMember = True
     else:
-        collidedMember.moving = not collidedMember.moving
-        memToDel = memberList.index(collidedMember)
-        if collidedMember.moving:
-            return memToDel
-        return None
+        makingMember = False
+    return makingMember
 
 
-def memberSnapToNode(memberToCheck):
-    for p in nodeList:
-        nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
-        if nodeInInterest:
-            return p
-    return None
+def memberEnder():
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    if collidedNode:
+        print("ended on: " + str(collidedNode.id))
+        memInInterest = memberList[len(memberList) - 1]
+        memInInterest.moving=False
+        memInInterest.endNode=collidedNode
+
+
+
+# def memberSnapToNode(memberToCheck):
+#     for p in nodeList:
+#         nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
+#         if nodeInInterest:
+#             return p
+#     return None
+
+
+# def debugger():
+#     var = checkCollide(nodeList, mouseX, mouseY)
+#     print("Node Colide: " + str(var))
+#     var = checkCollide(memberList, mouseX, mouseY)
+#     print("Member Collide: " + str(var))
 
 
 # Pygame Stuff
@@ -126,12 +185,21 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 nodeDict = {}
-programMode = 0  # mode 0:Node Building
-# mode 1: Member Connecting
+programMode = 1  # mode 1:Node Building
+# mode 2: Member Connecting
 
 done = False
 checkForDelete = False
-nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
+makingMember = False
+
+def createTestingNodes():
+    nodeList.append(Node((500, 100), 0))
+    nodeList.append(Node((500, 300), 1))
+    nodeList.append(Node((300, 200), 2))
+    nodeList.append(Node((300, 300), 3))
+    nodeList.append(Node((400, 600), 4))
+
+#createTestingNodes()
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -139,25 +207,30 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if programMode == 0:
+            if programMode == 1:
                 indexToDel = nodeBuilder()  # This function builds nodes, returns the moving node as indexToDel
                 if not indexToDel:
                     checkForDelete = False
                 else:
                     checkForDelete = True
-            elif programMode == 1:
-                memberBuilder()
+            elif programMode == 2:
+                if makingMember:
+                    memberEnder()
+                    makingMember=False
+                else:
+                    makingMember = memberBuilder2()
+                    # debugger()
         if event.type == pygame.KEYDOWN:
-            if programMode == 0 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
+            if programMode == 1 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
                 nodeList.pop(indexToDel)
                 checkForDelete = False
             elif event.key == pygame.K_1:
                 programMode = 1  # program mode 1: Truss Building
-            elif event.key == pygame.K_0:
-                programMode = 0
+            elif event.key == pygame.K_2:
+                programMode = 2
 
-    if programMode == 0:
+    if programMode == 1:
         color = (125, 125, 120)
     else:
         color = (200, 200, 225)
