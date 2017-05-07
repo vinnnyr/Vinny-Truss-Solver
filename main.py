@@ -185,18 +185,21 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 nodeDict = {}
-programMode = 1  # mode 0:Node Building
-# mode 1: Member Connecting
+programMode = 1  # mode 1:Node Building
+# mode 2: Member Connecting
 
 done = False
 checkForDelete = False
 makingMember = False
 
-nodeList.append(Node((500, 100), 0))
-nodeList.append(Node((500, 300), 1))
-nodeList.append(Node((300, 200), 2))
-nodeList.append(Node((300, 300), 3))
-nodeList.append(Node((400, 600), 4))
+def createTestingNodes():
+    nodeList.append(Node((500, 100), 0))
+    nodeList.append(Node((500, 300), 1))
+    nodeList.append(Node((300, 200), 2))
+    nodeList.append(Node((300, 300), 3))
+    nodeList.append(Node((400, 600), 4))
+
+#createTestingNodes()
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -204,13 +207,13 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if programMode == 0:
+            if programMode == 1:
                 indexToDel = nodeBuilder()  # This function builds nodes, returns the moving node as indexToDel
                 if not indexToDel:
                     checkForDelete = False
                 else:
                     checkForDelete = True
-            elif programMode == 1:
+            elif programMode == 2:
                 if makingMember:
                     memberEnder()
                     makingMember=False
@@ -218,16 +221,16 @@ while not done:
                     makingMember = memberBuilder2()
                     # debugger()
         if event.type == pygame.KEYDOWN:
-            if programMode == 0 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
+            if programMode == 1 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
                 nodeList.pop(indexToDel)
                 checkForDelete = False
             elif event.key == pygame.K_1:
                 programMode = 1  # program mode 1: Truss Building
             elif event.key == pygame.K_2:
-                programMode = 0
+                programMode = 2
 
-    if programMode == 0:
+    if programMode == 1:
         color = (125, 125, 120)
     else:
         color = (200, 200, 225)
