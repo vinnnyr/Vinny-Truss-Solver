@@ -56,20 +56,20 @@ class Member:
         pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
 
+
 class Force:
-    def __init__(self,startNode):
-        self.startTup=(startNode.x,startNode.y)
-        (self.x,self.y)=self.startTup
-        isValid=0
-        while not isValid:
-            try:
-                self.value=int(raw_input("Please enter an integer value for this new force:"))
-                isValid=1
-                print("Force value is: "+str(self.value))
-            except ValueError:
-                print("pls try again")
+    def __init__(self, startNode, value):
+        self.startTup = (startNode.x, startNode.y)
+        (self.x, self.y) = self.startTup
+        self.color = (0, 0, 0)
+        self.value = value
 
-
+    def display(self):
+        self.x1=self.x+21
+        self.y1=self.y+21
+        self.y2=self.y1+self.value
+        pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x1, self.y2), 10)
+        pygame.draw.polygon(screen,self.color,((self.x1-10,self.y2),(self.x1+10,self.y2),(self.x1,self.y2+21)),0)
 
 
 def checkCollide(classList, x, y):
@@ -96,16 +96,17 @@ def worldLabelDisplay():
     mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
     mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
-    if programMode==1:
-        descriptionLabel=myFont.render("Node Building", 2, (0, 0, 0))
-    elif programMode==2:
+    if programMode == 1:
+        descriptionLabel = myFont.render("Node Building", 2, (0, 0, 0))
+    elif programMode == 2:
         descriptionLabel = myFont.render("Member Connecting", 2, (0, 0, 0))
-    elif programMode==3:
-        descriptionLabel= descriptionLabel=myFont.render("Force input", 2, (0, 0, 0))
+    elif programMode == 3:
+        descriptionLabel = descriptionLabel = myFont.render("Force input (Check the Python terminal window)", 2,
+                                                            (0, 0, 0))
     else:
         descriptionLabel = myFont.render("NULL", 2, (0, 0, 0))
 
-    screen.blit(descriptionLabel,(400,10))
+    screen.blit(descriptionLabel, (400, 10))
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
@@ -180,6 +181,20 @@ def memberEnder():
         memInInterest.endNode = collidedNode
 
 
+def forceBuilder():
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    if collidedNode:
+        isValid = 0
+        while not isValid:
+            try:
+                value = int(raw_input("Please enter an integer value for this new force:"))
+                isValid = 1
+                print("Force value is: " + str(value))
+            except ValueError:
+                print("Pls try again")
+        forceList.append(Force(collidedNode, value))
+
+
 # def memberSnapToNode(memberToCheck):
 #     for p in nodeList:
 #         nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
@@ -208,10 +223,10 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 # Main Global Variables
 nodeList = []
 memberList = []
-nodeDict = {}
+forceList = []
 programMode = 2  # mode 1:Node Building
 # mode 2: Member Connecting
-#mode 3: Force
+# mode 3: Force
 
 done = False
 checkForDelete = False
@@ -246,6 +261,8 @@ while not done:
                 else:
                     makingMember = memberBuilder2()
                     # debugger()
+            elif programMode == 3:
+                forceBuilder()
         if event.type == pygame.KEYDOWN:
             if programMode == 1 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
@@ -254,20 +271,21 @@ while not done:
             elif event.key == pygame.K_1:
                 programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
-                programMode = 2 #Member connecting
+                programMode = 2  # Member connecting
             elif event.key == pygame.K_3:
-                programMode = 3 #force inputting
-                force1=Force(nodeList[1])
+                programMode = 3  # force inputting
 
     if programMode == 1:
         color = (100, 120, 130)
     elif programMode == 2:
         color = (120, 140, 160)
     elif programMode == 3:
-        color= (140,160,180)
+        color = (140, 160, 180)
     screen.fill(color)
     for m in memberList:
         m.display()
+    for f in forceList:
+        f.display()
     for p in nodeList:
         p.display()
     worldLabelDisplay()
