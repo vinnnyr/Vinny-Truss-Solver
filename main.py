@@ -38,28 +38,23 @@ class Node:
 
 class Member:
     def __init__(self, startNode, _id):
-        self.startNode=startNode
-        self.startTup = (startNode.x, startNode.y)
+        self.startNode = startNode
+        self.startTup = (startNode.x + 21, startNode.y + 21)
         self.id = _id
-        (self.x, self.y) = self.startTup
-
         self.moving = True
+        (self.x, self.y) = self.startTup
         # print("Member Created")
 
     def display(self):
         if self.moving:
-            self.moveMode()
             self.color = (110, 110, 110)
+            self.endTup=(mouseX,mouseY)
         else:
+            if self.endNode:
+                self.endTup=(self.endNode.x+21,self.endNode.y+21)
             self.color = (100, 100, 100)
         pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
-
-    def moveMode(self):
-        # print("Move Mode")
-        (self.x1, self.y1) = self.startTup
-        self.endTup = (mouseX, mouseY)
-        (self.x, self.y) = self.endTup
 
 
 def checkCollide(classList, x, y):
@@ -109,57 +104,71 @@ def nodeBuilder():
         return None
 
 
-def memberBuilder():
-    def snapNode():
-        nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21), len(memberList)))
-        if nodeInInterest:
-            print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
-            return nodeInInterest
-        return False
-
-    collidedMember = checkCollide(memberList, mouseX, mouseY)
-    if not collidedMember:
-        nodeInInterest = snapNode()
-        if nodeInInterest:
-            print("start^")
-            memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21), len(memberList)))
-    else:
-        if collidedMember.__class__.__name__ == "list":
-            if (len(collidedMember) > 1):
-                collidedMember = collidedMember[0]
-        memb = checkCollide(memberList, mouseX, mouseY)
-        if memb:
-            if collidedMember.moving:
-                nodeInInterest = snapNode()
-                if nodeInInterest:
-                    print"end^"
-                    collidedMember.moving = not collidedMember.moving
-                    (collidedMember.x, collidedMember.y) = (nodeInInterest.x, nodeInInterest.y)
-                    # memToDel = memberList.index(collidedMember)
-                    # return memToDel
-                    # return None
+# def memberBuilder():
+#     def snapNode():
+#         nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21), len(memberList)))
+#         if nodeInInterest:
+#             print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
+#             return nodeInInterest
+#         return False
+#
+#     collidedMember = checkCollide(memberList, mouseX, mouseY)
+#     if not collidedMember:
+#         nodeInInterest = snapNode()
+#         if nodeInInterest:
+#             print("start^")
+#             memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21), len(memberList)))
+#     else:
+#         if collidedMember.__class__.__name__ == "list":
+#             if (len(collidedMember) > 1):
+#                 collidedMember = collidedMember[0]
+#         memb = checkCollide(memberList, mouseX, mouseY)
+#         if memb:
+#             if collidedMember.moving:
+#                 nodeInInterest = snapNode()
+#                 if nodeInInterest:
+#                     print"end^"
+#                     collidedMember.moving = not collidedMember.moving
+#                     (collidedMember.x, collidedMember.y) = (nodeInInterest.x, nodeInInterest.y)
+#                     # memToDel = memberList.index(collidedMember)
+#                     # return memToDel
+#                     # return None
 def memberBuilder2():
-    collidedNode=checkCollide(nodeList,mouseX,mouseY)
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
     if collidedNode:
-        memberList.append(Member(collidedNode,len(memberList)))
-        print("Started at: " +str(collidedNode.id))
+        memberList.append(Member(collidedNode, len(memberList)))
+        memInInterest=memberList[len(memberList)-1]
+        memInInterest.moving=True
+        print("Started at: " + str(collidedNode.id))
+        makingMember = True
+    else:
+        makingMember = False
+    return makingMember
+
+
+def memberEnder():
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    if collidedNode:
+        print("ended on: " + str(collidedNode.id))
+        memInInterest = memberList[len(memberList) - 1]
+        memInInterest.moving=False
+        memInInterest.endNode=collidedNode
 
 
 
+# def memberSnapToNode(memberToCheck):
+#     for p in nodeList:
+#         nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
+#         if nodeInInterest:
+#             return p
+#     return None
 
-def memberSnapToNode(memberToCheck):
-    for p in nodeList:
-        nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
-        if nodeInInterest:
-            return p
-    return None
 
-
-def debugger():
-    var = checkCollide(nodeList, mouseX, mouseY)
-    print("Node Colide: " + str(var))
-    var = checkCollide(memberList, mouseX, mouseY)
-    print("Member Collide: " + str(var))
+# def debugger():
+#     var = checkCollide(nodeList, mouseX, mouseY)
+#     print("Node Colide: " + str(var))
+#     var = checkCollide(memberList, mouseX, mouseY)
+#     print("Member Collide: " + str(var))
 
 
 # Pygame Stuff
@@ -181,12 +190,13 @@ programMode = 1  # mode 0:Node Building
 
 done = False
 checkForDelete = False
+makingMember = False
 
 nodeList.append(Node((500, 100), 0))
 nodeList.append(Node((500, 300), 1))
 nodeList.append(Node((300, 200), 2))
 nodeList.append(Node((300, 300), 3))
-nodeList.append(Node((400, 600), 3))
+nodeList.append(Node((400, 600), 4))
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -201,8 +211,12 @@ while not done:
                 else:
                     checkForDelete = True
             elif programMode == 1:
-                memberBuilder2()
-                #debugger()
+                if makingMember:
+                    memberEnder()
+                    makingMember=False
+                else:
+                    makingMember = memberBuilder2()
+                    # debugger()
         if event.type == pygame.KEYDOWN:
             if programMode == 0 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
