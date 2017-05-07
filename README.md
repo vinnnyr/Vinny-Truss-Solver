@@ -1,2 +1,16 @@
 # TrussSolver2
-This is a truss solver I am working on
+**Truss Solver Project in progress.**
+
+![alt text](screenshot.png)
+ 
+Build Nodes. 
+
+Connect them with members. 
+
+**_(In Progress:)_**
+
+_Add Forces.
+
+Add Constraints.
+
+Solve._
