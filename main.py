@@ -1,6 +1,5 @@
 import pygame
 import math
-import os
 from pygame.locals import *
 
 nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
@@ -12,6 +11,7 @@ class Node:
         self.y = _y
         self.id = _id
         self.moving = False
+        self.connMembList=[]
         # self.colour = (0, 0, 255)
         # self.thickness = 10
 
@@ -34,6 +34,10 @@ class Node:
         # print("Move Mode")
         self.x = mouseX - 21
         self.y = mouseY - 21
+
+    def takeMember(self,memb):
+        self.connMembList.append(memb)
+
 
 
 class Member:
@@ -70,6 +74,8 @@ class Force:
         self.y2=self.y1+self.value
         pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x1, self.y2), 10)
         pygame.draw.polygon(screen,self.color,((self.x1-10,self.y2),(self.x1+10,self.y2),(self.x1,self.y2+21)),0)
+        self.fLabel=myFont.render("Force Value: "+ str(self.value),2, (0, 0, 0))
+        screen.blit(self.fLabel,(self.x1+21,self.y2))
 
 
 def checkCollide(classList, x, y):
@@ -93,8 +99,8 @@ def worldLabelDisplay():
     nodeLengthLabel = myFont.render("Number of Nodes: " + str(len(nodeList)), 2, (0, 0, 0))
     memberLengthLabel = myFont.render("Number of Members: " + str(len(memberList)), 2, (0, 0, 0))
     gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
-    mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
-    mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
+    #mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
+    #mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
     if programMode == 1:
         descriptionLabel = myFont.render("Node Building", 2, (0, 0, 0))
@@ -110,8 +116,8 @@ def worldLabelDisplay():
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
-    screen.blit(mouseLabelX, (mouseX, mouseY + 10))
-    screen.blit(mouseLabelY, (mouseX, mouseY + 30))
+    #screen.blit(mouseLabelX, (mouseX, mouseY + 10))
+    #screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
 
 def nodeBuilder():
@@ -164,6 +170,7 @@ def memberBuilder2():
     if collidedNode:
         memberList.append(Member(collidedNode, len(memberList)))
         memInInterest = memberList[len(memberList) - 1]
+        collidedNode.takeMember(memInInterest)
         memInInterest.moving = True
         print("Started at: " + str(collidedNode.id))
         makingMember = True
@@ -179,6 +186,7 @@ def memberEnder():
         memInInterest = memberList[len(memberList) - 1]
         memInInterest.moving = False
         memInInterest.endNode = collidedNode
+        collidedNode.takeMember(memInInterest)
 
 
 def forceBuilder():
@@ -233,15 +241,36 @@ checkForDelete = False
 makingMember = False
 
 
-def createTestingNodes():
+def createTesting():
     nodeList.append(Node((200, 200), 0))
     nodeList.append(Node((500, 500), 1))
     nodeList.append(Node((500, 200), 2))
-    nodeList.append(Node((200, 500), 3))
 
+    p=0
+    for n in nodeList:
+        while p<len(nodeList)-1:
+            memberList.append(Member(n,p))
+            memInInterest=memberList[len(memberList) - 1]
+            n.takeMember(memInInterest)
+            memInInterest.moving=False
+            memInInterest.endNode=nodeList[p+1]
+            nodeList[p+1].takeMember(memInInterest)
+            p=p+1
+    memberList.append(Member(nodeList[1], p))
+    memInInterest = memberList[len(memberList) - 1]
+    nodeList[1].takeMember(memInInterest)
+    memInInterest.moving = False
+    memInInterest.endNode = nodeList[2]
+    nodeList[2].takeMember(memInInterest)
+    p = p + 1
 
-createTestingNodes()
-
+def printOwners():
+    for n in nodeList:
+        print("Node Id: "+str(n.id))
+        print("Owns: ")
+        for m in n.connMembList:
+            print("Memb"+str(m.id))
+createTesting()
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
     for event in pygame.event.get():
@@ -272,6 +301,7 @@ while not done:
                 programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
                 programMode = 2  # Member connecting
+                #printOwners()
             elif event.key == pygame.K_3:
                 programMode = 3  # force inputting
 
