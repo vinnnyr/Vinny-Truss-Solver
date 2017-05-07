@@ -48,10 +48,10 @@ class Member:
     def display(self):
         if self.moving:
             self.color = (110, 110, 110)
-            self.endTup=(mouseX,mouseY)
+            self.endTup = (mouseX, mouseY)
         else:
             if self.endNode:
-                self.endTup=(self.endNode.x+21,self.endNode.y+21)
+                self.endTup = (self.endNode.x + 21, self.endNode.y + 21)
             self.color = (100, 100, 100)
         pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
@@ -137,8 +137,8 @@ def memberBuilder2():
     collidedNode = checkCollide(nodeList, mouseX, mouseY)
     if collidedNode:
         memberList.append(Member(collidedNode, len(memberList)))
-        memInInterest=memberList[len(memberList)-1]
-        memInInterest.moving=True
+        memInInterest = memberList[len(memberList) - 1]
+        memInInterest.moving = True
         print("Started at: " + str(collidedNode.id))
         makingMember = True
     else:
@@ -151,9 +151,8 @@ def memberEnder():
     if collidedNode:
         print("ended on: " + str(collidedNode.id))
         memInInterest = memberList[len(memberList) - 1]
-        memInInterest.moving=False
-        memInInterest.endNode=collidedNode
-
+        memInInterest.moving = False
+        memInInterest.endNode = collidedNode
 
 
 # def memberSnapToNode(memberToCheck):
@@ -192,6 +191,7 @@ done = False
 checkForDelete = False
 makingMember = False
 
+
 def createTestingNodes():
     nodeList.append(Node((500, 100), 0))
     nodeList.append(Node((500, 300), 1))
@@ -199,7 +199,8 @@ def createTestingNodes():
     nodeList.append(Node((300, 300), 3))
     nodeList.append(Node((400, 600), 4))
 
-#createTestingNodes()
+
+# createTestingNodes()
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -216,7 +217,7 @@ while not done:
             elif programMode == 2:
                 if makingMember:
                     memberEnder()
-                    makingMember=False
+                    makingMember = False
                 else:
                     makingMember = memberBuilder2()
                     # debugger()
@@ -232,7 +233,7 @@ while not done:
 
     if programMode == 1:
         color = (125, 125, 120)
-    else:
+    elif programMode == 2:
         color = (200, 200, 225)
     screen.fill(color)
     for m in memberList:
