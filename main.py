@@ -56,6 +56,21 @@ class Member:
         pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
 
+class Force:
+    def __init__(self,startNode):
+        self.startTup=(startNode.x,startNode.y)
+        (self.x,self.y)=self.startTup
+        isValid=0
+        while not isValid:
+            try:
+                self.value=int(raw_input("Please enter an integer value for this new force:"))
+                isValid=1
+                print("Force value is: "+str(self.value))
+            except ValueError:
+                print("pls try again")
+
+
+
 
 def checkCollide(classList, x, y):
     var = classList.__class__.__name__
@@ -242,6 +257,7 @@ while not done:
                 programMode = 2 #Member connecting
             elif event.key == pygame.K_3:
                 programMode = 3 #force inputting
+                force1=Force(nodeList[1])
 
     if programMode == 1:
         color = (100, 120, 130)
