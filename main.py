@@ -81,6 +81,16 @@ def worldLabelDisplay():
     mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
     mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
+    if programMode==1:
+        descriptionLabel=myFont.render("Node Building", 2, (0, 0, 0))
+    elif programMode==2:
+        descriptionLabel = myFont.render("Member Connecting", 2, (0, 0, 0))
+    elif programMode==3:
+        descriptionLabel= descriptionLabel=myFont.render("Force input", 2, (0, 0, 0))
+    else:
+        descriptionLabel = myFont.render("NULL", 2, (0, 0, 0))
+
+    screen.blit(descriptionLabel,(400,10))
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
@@ -184,8 +194,9 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 nodeDict = {}
-programMode = 1  # mode 1:Node Building
+programMode = 2  # mode 1:Node Building
 # mode 2: Member Connecting
+#mode 3: Force
 
 done = False
 checkForDelete = False
@@ -193,14 +204,13 @@ makingMember = False
 
 
 def createTestingNodes():
-    nodeList.append(Node((500, 100), 0))
-    nodeList.append(Node((500, 300), 1))
-    nodeList.append(Node((300, 200), 2))
-    nodeList.append(Node((300, 300), 3))
-    nodeList.append(Node((400, 600), 4))
+    nodeList.append(Node((200, 200), 0))
+    nodeList.append(Node((500, 500), 1))
+    nodeList.append(Node((500, 200), 2))
+    nodeList.append(Node((200, 500), 3))
 
 
-# createTestingNodes()
+createTestingNodes()
 
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -227,14 +237,18 @@ while not done:
                 nodeList.pop(indexToDel)
                 checkForDelete = False
             elif event.key == pygame.K_1:
-                programMode = 1  # program mode 1: Truss Building
+                programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
-                programMode = 2
+                programMode = 2 #Member connecting
+            elif event.key == pygame.K_3:
+                programMode = 3 #force inputting
 
     if programMode == 1:
-        color = (125, 125, 120)
+        color = (100, 120, 130)
     elif programMode == 2:
-        color = (200, 200, 225)
+        color = (120, 140, 160)
+    elif programMode == 3:
+        color= (140,160,180)
     screen.fill(color)
     for m in memberList:
         m.display()
