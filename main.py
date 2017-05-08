@@ -83,13 +83,19 @@ class Force:
         self.y1 = self.y + 21
         self.y2 = self.y1 + (self.value * math.sin(self.theta))
         self.x2 = self.x1 + (self.value * math.cos(self.theta))
-        self.w = self.x2 + math.sin(self.theta)
-        self.h = (21 * math.cos(self.theta))
+        self.phi = 3.14159/2  - self.theta
+        self.x3 = self.x2 + (.25*self.value * math.sin(-self.theta))-2*math.cos(self.theta)
+        self.y3 = self.y2 + (.25*self.value * math.cos(-self.theta))-2*math.sin(self.theta)
+        self.x4 = self.x2 - (.25*self.value * math.sin(-self.theta))-2*math.cos(self.theta)
+        self.y4 = self.y2 - (.25*self.value * math.cos(-self.theta))-2*math.sin(self.theta)
+        self.x5 = self.x2 + (.25*self.value * math.cos(self.theta))
+        self.y5 = self.y2 + (.25*self.value * math.sin(self.theta))
         pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x2, self.y2), 10)
         # pygame.draw.polygon(screen,self.color,((self.x2,self.y2-self.h),(self.x2,self.y2+self.h),(self.x2+self.w,self.y2)),0)
-        pygame.draw.polygon(screen, self.color, ((self.x2 + 10 * math.sin(-self.theta), self.y2 + self.h),
-                                                 (self.x2 - 10 * math.sin(-self.theta), self.y2 - self.h), (self.x2+10*math.cos(self.theta) + 10 * math.sin(-self.theta), self.y2+10)),
-                            0)
+        pygame.draw.polygon(screen, self.color, ((self.x3, self.y3),
+                                                 (self.x4, self.y4), (self.x5, self.y5)),0)
+        #pygame.draw.circle(screen,self.color,(int(self.x3),int(self.y3)),10,1)
+
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
@@ -290,7 +296,7 @@ def createTesting():
     memInInterest.moving = False
     memInInterest.endNode = nodeList[2]
     nodeList[2].takeMember(memInInterest)
-    forceList.append(Force(nodeList[2], 100, 50))
+    forceList.append(Force(nodeList[2], 100, 300))
     p = p + 1
 
 
