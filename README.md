@@ -1,6 +1,7 @@
 # TrussSolver2
 **Truss Solver Project in progress.**
 
+![alt text](screenshot2.png)
 ![alt text](screenshot.png)
  
 Build Nodes. 

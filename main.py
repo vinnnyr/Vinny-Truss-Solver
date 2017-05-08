@@ -118,21 +118,30 @@ class Button:
 
     def action(self):
         self.pressed=self.pressed+1
-        print("Action Started")
         if self.actionName == 'force':
-            print("force solver")
             self.success = forceSolver()
 
 
 def forceSolver():
     xVals = []
     yVals = []
+    mVals= []
     for f in forceList:
         xVals.append(f.value * math.cos(f.theta))
         yVals.append(f.value * math.sin((f.theta)))
+    for n in nodeList:
+        #print(nodeList[0].id)
+        if nodeList.index(n)!=0:
+            (pX,pY)=(nodeList[0].x-n.x,nodeList[0].y-n.y)
+            for f in n.fList:
+                (fX,fY)=(f.value*math.cos(f.theta),f.value*(math.sin(f.theta)))
+                m=pX*fY-pY*fX
+                mVals.append(m)
+    mSum=int(sum(mVals))
+    #print(mSum)
     xSum = int(sum(xVals))
     ySum = int(sum(yVals))
-    if xSum == 0 & ySum == 0:
+    if xSum == 0 & ySum == 0 & mSum==0:
         return True
     else:
         return False
