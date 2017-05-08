@@ -17,8 +17,8 @@ class Node:
         # self.thickness = 10
 
     def genLabel(self):
-        self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
-        self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
+        #self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
+        #self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
         self.labelId = myFont.render("ID: " + str(self.id), 2, (0, 0, 0))
         if len(self.fList) >= 1:
             self.forceTakenLabel = myFont.render("Has Force", 2, (0, 0, 0))
@@ -31,9 +31,10 @@ class Node:
             self.moveMode()
         self.genLabel()
         screen.blit(nodeImg, (self.x, self.y))
-        screen.blit(self.labelX, (self.x - 21, self.y - 30))
-        screen.blit(self.labelY, (self.x - 21, self.y - 10))
-        screen.blit(self.labelId, (self.x - 21, self.y - 50))
+        #screen.blit(self.labelX, (self.x - 21, self.y - 30))
+        #screen.blit(self.labelY, (self.x - 21, self.y - 10))
+        #screen.blit(self.labelId, (self.x - 21, self.y - 50))
+        screen.blit(self.labelId, (self.x - 21, self.y - 20))
         if self.forceTakenLabel:
             screen.blit(self.forceTakenLabel, (self.x - 21, self.y - 70))
 
@@ -60,12 +61,12 @@ class Member:
 
     def display(self):
         if self.moving:
-            self.color = (110, 110, 110)
+            self.color = (106, 135, 149)
             self.endTup = (mouseX, mouseY)
         else:
             if self.endNode:
                 self.endTup = (self.endNode.x + 21, self.endNode.y + 21)
-            self.color = (100, 100, 100)
+            self.color = (96, 125, 139)
         pygame.draw.line(screen, self.color, self.startTup, self.endTup, 21)
         # print("Member Drawn")
 
@@ -74,7 +75,7 @@ class Force:
     def __init__(self, startNode, value, theta):
         self.startTup = (startNode.x, startNode.y)
         (self.x, self.y) = self.startTup
-        self.color = (0, 0, 0)
+        self.color = (52, 81, 94)
         self.value = value
         self.theta = -math.radians(theta)
 
@@ -83,18 +84,18 @@ class Force:
         self.y1 = self.y + 21
         self.y2 = self.y1 + (self.value * math.sin(self.theta))
         self.x2 = self.x1 + (self.value * math.cos(self.theta))
-        self.phi = 3.14159/2  - self.theta
-        self.x3 = self.x2 + (.25*self.value * math.sin(-self.theta))-2*math.cos(self.theta)
-        self.y3 = self.y2 + (.25*self.value * math.cos(-self.theta))-2*math.sin(self.theta)
-        self.x4 = self.x2 - (.25*self.value * math.sin(-self.theta))-2*math.cos(self.theta)
-        self.y4 = self.y2 - (.25*self.value * math.cos(-self.theta))-2*math.sin(self.theta)
-        self.x5 = self.x2 + (.25*self.value * math.cos(self.theta))
-        self.y5 = self.y2 + (.25*self.value * math.sin(self.theta))
+        self.phi = 3.14159 / 2 - self.theta
+        self.x3 = self.x2 + (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
+        self.y3 = self.y2 + (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
+        self.x4 = self.x2 - (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
+        self.y4 = self.y2 - (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
+        self.x5 = self.x2 + (.15 * self.value * math.cos(self.theta))
+        self.y5 = self.y2 + (.15 * self.value * math.sin(self.theta))
         pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x2, self.y2), 10)
         # pygame.draw.polygon(screen,self.color,((self.x2,self.y2-self.h),(self.x2,self.y2+self.h),(self.x2+self.w,self.y2)),0)
         pygame.draw.polygon(screen, self.color, ((self.x3, self.y3),
-                                                 (self.x4, self.y4), (self.x5, self.y5)),0)
-        #pygame.draw.circle(screen,self.color,(int(self.x3),int(self.y3)),10,1)
+                                                 (self.x4, self.y4), (self.x5, self.y5)), 0)
+        # pygame.draw.circle(screen,self.color,(int(self.x3),int(self.y3)),10,1)
 
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
@@ -259,8 +260,9 @@ pygame.display.set_caption("Vinny's Truss Solver")
 clock = pygame.time.Clock()
 
 # Font Stuff
-defaultFont = pygame.font.get_default_font()
-myFont = pygame.font.SysFont(defaultFont, 22)
+# defaultFont = pygame.font.get_default_font()
+myFont = pygame.font.SysFont('Futura',
+                             18)  # IF this doesnt work, replace the string 'Futura' with the variable defaultFont
 
 # Main Global Variables
 nodeList = []
@@ -341,16 +343,16 @@ while not done:
                 programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
                 programMode = 2  # Member connecting
-                printOwners()
+                #printOwners()
             elif event.key == pygame.K_3:
                 programMode = 3  # force inputting
 
     if programMode == 1:
-        color = (100, 120, 130)
+        color = (255, 255, 255)
     elif programMode == 2:
-        color = (120, 140, 160)
+        color = (207, 216, 220)
     elif programMode == 3:
-        color = (140, 160, 180)
+        color = (158, 167, 170)
     screen.fill(color)
     for m in memberList:
         m.display()
