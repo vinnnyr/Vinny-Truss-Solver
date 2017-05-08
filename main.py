@@ -11,7 +11,8 @@ class Node:
         self.y = _y
         self.id = _id
         self.moving = False
-        self.connMembList=[]
+        self.connMembList = []
+        self.fList = []
         # self.colour = (0, 0, 255)
         # self.thickness = 10
 
@@ -19,6 +20,10 @@ class Node:
         self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
         self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
         self.labelId = myFont.render("ID: " + str(self.id), 2, (0, 0, 0))
+        if len(self.fList) >= 1:
+            self.forceTakenLabel = myFont.render("Has Force", 2, (0, 0, 0))
+        else:
+            self.forceTakenLabel = myFont.render(" ", 2, (0, 0, 0))
 
     def display(self):
         # pygame.draw.circle(screen, self.colour, (self.x, self.y), self.size, self.thickness)
@@ -29,15 +34,19 @@ class Node:
         screen.blit(self.labelX, (self.x - 21, self.y - 30))
         screen.blit(self.labelY, (self.x - 21, self.y - 10))
         screen.blit(self.labelId, (self.x - 21, self.y - 50))
+        if self.forceTakenLabel:
+            screen.blit(self.forceTakenLabel, (self.x - 21, self.y - 70))
 
     def moveMode(self):
         # print("Move Mode")
         self.x = mouseX - 21
         self.y = mouseY - 21
 
-    def takeMember(self,memb):
+    def takeMember(self, memb):
         self.connMembList.append(memb)
 
+    def takeForce(self, force):
+        self.fList.append(force)
 
 
 class Member:
@@ -62,20 +71,27 @@ class Member:
 
 
 class Force:
-    def __init__(self, startNode, value):
+    def __init__(self, startNode, value, theta):
         self.startTup = (startNode.x, startNode.y)
         (self.x, self.y) = self.startTup
         self.color = (0, 0, 0)
         self.value = value
+        self.theta = -math.radians(theta)
 
     def display(self):
-        self.x1=self.x+21
-        self.y1=self.y+21
-        self.y2=self.y1+self.value
-        pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x1, self.y2), 10)
-        pygame.draw.polygon(screen,self.color,((self.x1-10,self.y2),(self.x1+10,self.y2),(self.x1,self.y2+21)),0)
-        self.fLabel=myFont.render("Force Value: "+ str(self.value),2, (0, 0, 0))
-        screen.blit(self.fLabel,(self.x1+21,self.y2))
+        self.x1 = self.x + 21
+        self.y1 = self.y + 21
+        self.y2 = self.y1 + (self.value * math.sin(self.theta))
+        self.x2 = self.x1 + (self.value * math.cos(self.theta))
+        self.w = self.x2 + math.sin(self.theta)
+        self.h = (21 * math.cos(self.theta))
+        pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x2, self.y2), 10)
+        # pygame.draw.polygon(screen,self.color,((self.x2,self.y2-self.h),(self.x2,self.y2+self.h),(self.x2+self.w,self.y2)),0)
+        pygame.draw.polygon(screen, self.color, ((self.x2 + 10 * math.sin(-self.theta), self.y2 + self.h),
+                                                 (self.x2 - 10 * math.sin(-self.theta), self.y2 - self.h), (self.x2+10*math.cos(self.theta) + 10 * math.sin(-self.theta), self.y2+10)),
+                            0)
+        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
+        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
 
 def checkCollide(classList, x, y):
@@ -99,8 +115,8 @@ def worldLabelDisplay():
     nodeLengthLabel = myFont.render("Number of Nodes: " + str(len(nodeList)), 2, (0, 0, 0))
     memberLengthLabel = myFont.render("Number of Members: " + str(len(memberList)), 2, (0, 0, 0))
     gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
-    #mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
-    #mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
+    # mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
+    # mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
     if programMode == 1:
         descriptionLabel = myFont.render("Node Building", 2, (0, 0, 0))
@@ -116,8 +132,8 @@ def worldLabelDisplay():
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
-    #screen.blit(mouseLabelX, (mouseX, mouseY + 10))
-    #screen.blit(mouseLabelY, (mouseX, mouseY + 30))
+    # screen.blit(mouseLabelX, (mouseX, mouseY + 10))
+    # screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
 
 def nodeBuilder():
@@ -199,8 +215,20 @@ def forceBuilder():
                 isValid = 1
                 print("Force value is: " + str(value))
             except ValueError:
-                print("Pls try again")
-        forceList.append(Force(collidedNode, value))
+                print("Pls try again (value)")
+        isValid = 0
+        while not isValid:
+            try:
+                theta = int(raw_input("Please enter an angle (int) from horz x axis for the force:"))
+                print("theta:" + str(theta))
+                if theta < 360:
+                    forceList.append(Force(collidedNode, value, theta))
+                    collidedNode.takeForce(forceList[len(forceList) - 1])
+                    isValid = 1
+                else:
+                    raise (ValueError)
+            except ValueError:
+                print("Pls try again (angle)")
 
 
 # def memberSnapToNode(memberToCheck):
@@ -232,7 +260,7 @@ myFont = pygame.font.SysFont(defaultFont, 22)
 nodeList = []
 memberList = []
 forceList = []
-programMode = 2  # mode 1:Node Building
+programMode = 3  # mode 1:Node Building
 # mode 2: Member Connecting
 # mode 3: Force
 
@@ -246,30 +274,36 @@ def createTesting():
     nodeList.append(Node((500, 500), 1))
     nodeList.append(Node((500, 200), 2))
 
-    p=0
+    p = 0
     for n in nodeList:
-        while p<len(nodeList)-1:
-            memberList.append(Member(n,p))
-            memInInterest=memberList[len(memberList) - 1]
+        while p < len(nodeList) - 1:
+            memberList.append(Member(n, p))
+            memInInterest = memberList[len(memberList) - 1]
             n.takeMember(memInInterest)
-            memInInterest.moving=False
-            memInInterest.endNode=nodeList[p+1]
-            nodeList[p+1].takeMember(memInInterest)
-            p=p+1
+            memInInterest.moving = False
+            memInInterest.endNode = nodeList[p + 1]
+            nodeList[p + 1].takeMember(memInInterest)
+            p = p + 1
     memberList.append(Member(nodeList[1], p))
     memInInterest = memberList[len(memberList) - 1]
     nodeList[1].takeMember(memInInterest)
     memInInterest.moving = False
     memInInterest.endNode = nodeList[2]
     nodeList[2].takeMember(memInInterest)
+    forceList.append(Force(nodeList[2], 100, 50))
     p = p + 1
+
 
 def printOwners():
     for n in nodeList:
-        print("Node Id: "+str(n.id))
+        print("Node Id: " + str(n.id))
         print("Owns: ")
         for m in n.connMembList:
-            print("Memb"+str(m.id))
+            print("Memb" + str(m.id))
+        for f in n.fList:
+            print("Force" + str(f.value))
+
+
 createTesting()
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -301,7 +335,7 @@ while not done:
                 programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
                 programMode = 2  # Member connecting
-                #printOwners()
+                printOwners()
             elif event.key == pygame.K_3:
                 programMode = 3  # force inputting
 
