@@ -4,7 +4,8 @@ import math
 from pygame.locals import *
 
 nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
-logoImg=pygame.image.load('logo.png')
+buttonImg = pygame.image.load('SolveButton.png')
+logoImg = pygame.image.load('logo.png')
 
 
 class Node:
@@ -19,8 +20,8 @@ class Node:
         # self.thickness = 10
 
     def genLabel(self):
-        #self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
-        #self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
+        # self.labelX = myFont.render("X: " + str(self.x), 2, (0, 0, 0))
+        # self.labelY = myFont.render("Y: " + str(self.y), 2, (0, 0, 0))
         self.labelId = myFont.render("ID: " + str(self.id), 2, (0, 0, 0))
         if len(self.fList) >= 1:
             self.forceTakenLabel = myFont.render("Has Force", 2, (0, 0, 0))
@@ -33,9 +34,9 @@ class Node:
             self.moveMode()
         self.genLabel()
         screen.blit(nodeImg, (self.x, self.y))
-        #screen.blit(self.labelX, (self.x - 21, self.y - 30))
-        #screen.blit(self.labelY, (self.x - 21, self.y - 10))
-        #screen.blit(self.labelId, (self.x - 21, self.y - 50))
+        # screen.blit(self.labelX, (self.x - 21, self.y - 30))
+        # screen.blit(self.labelY, (self.x - 21, self.y - 10))
+        # screen.blit(self.labelId, (self.x - 21, self.y - 50))
         screen.blit(self.labelId, (self.x - 21, self.y - 20))
         if self.forceTakenLabel:
             screen.blit(self.forceTakenLabel, (self.x - 21, self.y - 70))
@@ -86,7 +87,6 @@ class Force:
         self.y1 = self.y + 21
         self.y2 = self.y1 + (self.value * math.sin(self.theta))
         self.x2 = self.x1 + (self.value * math.cos(self.theta))
-        self.phi = 3.14159 / 2 - self.theta
         self.x3 = self.x2 + (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
         self.y3 = self.y2 + (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
         self.x4 = self.x2 - (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
@@ -101,6 +101,41 @@ class Force:
 
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+
+
+class Button:
+    def __init__(self, pos, img, actionName):
+        self.pos = pos
+        (self.x, self.y) = self.pos
+        self.img = img
+        self.actionName = actionName
+        self.success= False
+        self.pressed=0
+
+
+    def display(self):
+        screen.blit(self.img, self.pos)
+
+    def action(self):
+        self.pressed=self.pressed+1
+        print("Action Started")
+        if self.actionName == 'force':
+            print("force solver")
+            self.success = forceSolver()
+
+
+def forceSolver():
+    xVals = []
+    yVals = []
+    for f in forceList:
+        xVals.append(f.value * math.cos(f.theta))
+        yVals.append(f.value * math.sin((f.theta)))
+    xSum = int(sum(xVals))
+    ySum = int(sum(yVals))
+    if xSum == 0 & ySum == 0:
+        return True
+    else:
+        return False
 
 
 def checkCollide(classList, x, y):
@@ -124,6 +159,12 @@ def worldLabelDisplay():
     nodeLengthLabel = myFont.render("Number of Nodes: " + str(len(nodeList)), 2, (0, 0, 0))
     memberLengthLabel = myFont.render("Number of Members: " + str(len(memberList)), 2, (0, 0, 0))
     gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
+    if solveButton.success:
+        staticLabel = myFont.render(("Static Equilibrium"), 2, (0, 0, 0))
+    elif solveButton.pressed==0:
+        staticLabel = myFont.render(("Not solved"), 2, (0, 0, 0))
+    else:
+        staticLabel = myFont.render(("Not in static equilibrium "), 2, (0, 0, 0))
     # mouseLabelX = myFont.render("mouseX :" + str(mouseX), 2, (0, 0, 0))
     # mouseLabelY = myFont.render("mouseY :" + str(mouseY), 2, (0, 0, 0))
 
@@ -132,16 +173,17 @@ def worldLabelDisplay():
     elif programMode == 2:
         descriptionLabel = myFont.render("Member Connecting", 2, (0, 0, 0))
     elif programMode == 3:
-        descriptionLabel = descriptionLabel = myFont.render("Force input", 2,
-                                                            (0, 0, 0))
+        descriptionLabel = descriptionLabel = myFont.render("Force input", 2,(0, 0, 0))
     else:
         descriptionLabel = myFont.render("NULL", 2, (0, 0, 0))
+
+    screen.blit(staticLabel, (400, 30))
 
     screen.blit(descriptionLabel, (400, 10))
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
-    #screen.blit(logoImg,(300,600))
+    # screen.blit(logoImg,(300,600))
     # screen.blit(mouseLabelX, (mouseX, mouseY + 10))
     # screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
@@ -221,9 +263,9 @@ def forceBuilder():
         isValid = 0
         while not isValid:
             try:
-                value=inputbox.ask(screen,"Force Value (int)")
-                value=int(value)
-                #value = int(raw_input("Please enter an integer value for this new force:"))
+                value = inputbox.ask(screen, "Force Value (int)")
+                value = int(value)
+                # value = int(raw_input("Please enter an integer value for this new force:"))
                 isValid = 1
                 print("Force value is: " + str(value))
             except ValueError:
@@ -242,6 +284,12 @@ def forceBuilder():
                     raise (ValueError)
             except ValueError:
                 print("Pls try again (angle)")
+
+
+def buttonChecker():
+    buttonCollided = checkCollide(buttonList, mouseX, mouseY)
+    if buttonCollided:
+        buttonCollided.action()
 
 
 # def memberSnapToNode(memberToCheck):
@@ -274,6 +322,7 @@ myFont = pygame.font.SysFont('Futura',
 nodeList = []
 memberList = []
 forceList = []
+buttonList = []
 programMode = 3  # mode 1:Node Building
 # mode 2: Member Connecting
 # mode 3: Force
@@ -304,7 +353,7 @@ def createTesting():
     memInInterest.moving = False
     memInInterest.endNode = nodeList[2]
     nodeList[2].takeMember(memInInterest)
-    forceList.append(Force(nodeList[2], 100, 300))
+    forceList.append(Force(nodeList[2], 100, 180))
     p = p + 1
 
 
@@ -319,6 +368,8 @@ def printOwners():
 
 
 createTesting()
+solveButton = Button((10, 75), buttonImg, 'force')
+buttonList.append(solveButton)
 while not done:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
     for event in pygame.event.get():
@@ -340,6 +391,7 @@ while not done:
                     # debugger()
             elif programMode == 3:
                 forceBuilder()
+                buttonChecker()
         if event.type == pygame.KEYDOWN:
             if programMode == 1 and event.key == pygame.K_d and checkForDelete:  # Known Bug: Can't delete the first node
                 # print("Deleting Index" + str(indexToDel))
@@ -349,7 +401,7 @@ while not done:
                 programMode = 1  # program mode 1: Node Building
             elif event.key == pygame.K_2:
                 programMode = 2  # Member connecting
-                #printOwners()
+                # printOwners()
             elif event.key == pygame.K_3:
                 programMode = 3  # force inputting
 
@@ -366,6 +418,9 @@ while not done:
         f.display()
     for p in nodeList:
         p.display()
+    if programMode == 3:
+        for b in buttonList:
+            b.display()
     worldLabelDisplay()
     pygame.display.flip()
     clock.tick(60)
