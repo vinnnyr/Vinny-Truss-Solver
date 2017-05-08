@@ -1,8 +1,10 @@
 import pygame
+import inputbox
 import math
 from pygame.locals import *
 
 nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
+logoImg=pygame.image.load('logo.png')
 
 
 class Node:
@@ -130,7 +132,7 @@ def worldLabelDisplay():
     elif programMode == 2:
         descriptionLabel = myFont.render("Member Connecting", 2, (0, 0, 0))
     elif programMode == 3:
-        descriptionLabel = descriptionLabel = myFont.render("Force input (Check the Python terminal window)", 2,
+        descriptionLabel = descriptionLabel = myFont.render("Force input", 2,
                                                             (0, 0, 0))
     else:
         descriptionLabel = myFont.render("NULL", 2, (0, 0, 0))
@@ -139,6 +141,7 @@ def worldLabelDisplay():
     screen.blit(gameModeLabel, (10, 10))
     screen.blit(nodeLengthLabel, (10, 30))
     screen.blit(memberLengthLabel, (10, 50))
+    #screen.blit(logoImg,(300,600))
     # screen.blit(mouseLabelX, (mouseX, mouseY + 10))
     # screen.blit(mouseLabelY, (mouseX, mouseY + 30))
 
@@ -218,7 +221,9 @@ def forceBuilder():
         isValid = 0
         while not isValid:
             try:
-                value = int(raw_input("Please enter an integer value for this new force:"))
+                value=inputbox.ask(screen,"Force Value (int)")
+                value=int(value)
+                #value = int(raw_input("Please enter an integer value for this new force:"))
                 isValid = 1
                 print("Force value is: " + str(value))
             except ValueError:
@@ -226,7 +231,8 @@ def forceBuilder():
         isValid = 0
         while not isValid:
             try:
-                theta = int(raw_input("Please enter an angle (int) from horz x axis for the force:"))
+                theta = inputbox.ask(screen, "Theta Value (int) (from pos X)")
+                theta = int(theta)
                 print("theta:" + str(theta))
                 if theta < 360:
                     forceList.append(Force(collidedNode, value, theta))
