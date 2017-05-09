@@ -3,9 +3,9 @@ import inputbox
 import math
 from pygame.locals import *
 
-nodeImg = pygame.image.load('node.png')  # 42px by 42px sprite of a node
-buttonImg = pygame.image.load('SolveButton.png')
-logoImg = pygame.image.load('logo.png')
+nodeImg = pygame.image.load('imgs/node.png')  # 42px by 42px sprite of a node
+buttonImg = pygame.image.load('imgs/SolveButton.png')
+logoImg = pygame.image.load('imgs/logo.png')
 
 
 class Node:
@@ -93,9 +93,45 @@ class Force:
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
 
+def forceBuilder():
+    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    if collidedNode:
+        isValid = 0
+        while not isValid:
+            try:
+                value = inputbox.ask(screen, "Force Value (int)")
+                if value == 'x':
+                    print('unknown value')
+                    theta = 't'
+                    r1 = reactionForce(collidedNode)
+                    reactList.append(r1)
+                else:
+                    value = int(value)
+                # value = int(raw_input("Please enter an integer value for this new force:"))
+                isValid = 1
+
+            except ValueError:
+                print("Pls try again (value)")
+        isValid = 0
+        while not isValid and value != 'x':
+            try:
+                theta = inputbox.ask(screen, "Theta Value (int) (from pos X)")
+                theta = int(theta)
+                if theta < 360:
+                    forceList.append(Force(collidedNode, value, theta))
+                    collidedNode.takeForce(forceList[len(forceList) - 1])
+                    isValid = 1
+                else:
+                    raise (ValueError)
+            except ValueError:
+                print("Pls try again (angle)")
+        #print("Force value is: " + str(value))
+        #print("theta:" + str(theta))
+
+
 class reactionForce:
     def __init__(self, endNode):
-        self.node=endNode
+        self.node = endNode
         self.startTup = (endNode.x + 21, endNode.y + 121)
         self.theta = '?'
         (self.x, self.y) = self.startTup
@@ -112,6 +148,45 @@ class reactionForce:
         self.myArrow.display()
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+
+
+def forceSolver():  # This func will solve for reaction forces
+    xVals = []
+    yVals = []
+    mVals = []
+    for f in forceList:
+        xVals.append(f.value * math.cos(f.theta))
+        yVals.append(f.value * math.sin((f.theta)))
+    for n in nodeList:
+        # print(nodeList[0].id)
+        if nodeList.index(n) != 0:
+            (pX, pY) = (nodeList[0].x - n.x, nodeList[0].y - n.y)
+            for f in n.fList:
+                (fX, fY) = (f.value * math.cos(f.theta), f.value * (math.sin(f.theta)))
+                m = pX * fY - pY * fX
+                #print(m)
+                mVals.append(m)
+    mSum = int(sum(mVals))
+    xSum = int(sum(xVals))
+    ySum = int(sum(yVals))
+    print("--------------------------")
+    if xSum!=0:
+        print("Force in X not zero : " + str(xSum))
+    if ySum!=0:
+        print("Force in Y not zero : " + str(ySum))
+    if xSum == 0 & ySum == 0 & mSum == 0:
+        return True
+    if mSum!=0:
+        print("Moments not zero : " + str(mSum))
+    elif len(reactList) == 1:
+        value = math.sqrt(xSum ** 2 + ySum ** 2)
+        theta = math.degrees(math.atan(ySum / xSum))
+        reactInterest = reactList.pop(0)
+        nodeInInterest = reactInterest.node
+        forceList.append(Force(nodeInInterest, value, theta))
+        return True
+    else:
+        return False
 
 
 class Arrow:
@@ -150,38 +225,6 @@ class Button:
         self.pressed = self.pressed + 1
         if self.actionName == 'force':
             self.success = forceSolver()
-
-
-def forceSolver():
-    xVals = []
-    yVals = []
-    mVals = []
-    for f in forceList:
-        xVals.append(f.value * math.cos(f.theta))
-        yVals.append(f.value * math.sin((f.theta)))
-    for n in nodeList:
-        # print(nodeList[0].id)
-        if nodeList.index(n) != 0:
-            (pX, pY) = (nodeList[0].x - n.x, nodeList[0].y - n.y)
-            for f in n.fList:
-                (fX, fY) = (f.value * math.cos(f.theta), f.value * (math.sin(f.theta)))
-                m = pX * fY - pY * fX
-                print(m)
-                mVals.append(m)
-    mSum = int(sum(mVals))
-    # print(mSum)
-    xSum = int(sum(xVals))
-    ySum = int(sum(yVals))
-    if len(reactList)==1:
-        value=math.sqrt(xSum**2 + ySum**2)
-        theta=math.degrees(math.atan(ySum/xSum))
-        reactInterest=reactList.pop(0)
-        nodeInInterest=reactInterest.node
-        forceList.append(Force(nodeInInterest,value,theta))
-    elif xSum == 0 & ySum == 0 & mSum == 0:
-        return True
-    else:
-        return False
 
 
 def checkCollide(classList, x, y):
@@ -272,42 +315,6 @@ def memberEnder():
         memInInterest.moving = False
         memInInterest.endNode = collidedNode
         collidedNode.takeMember(memInInterest)
-
-
-def forceBuilder():
-    collidedNode = checkCollide(nodeList, mouseX, mouseY)
-    if collidedNode:
-        isValid = 0
-        while not isValid:
-            try:
-                value = inputbox.ask(screen, "Force Value (int)")
-                if value == 'x':
-                    print('unknown value')
-                    theta = 't'
-                    r1 = reactionForce(collidedNode)
-                    reactList.append(r1)
-                else:
-                    value = int(value)
-                # value = int(raw_input("Please enter an integer value for this new force:"))
-                isValid = 1
-
-            except ValueError:
-                print("Pls try again (value)")
-        isValid = 0
-        while not isValid and value != 'x':
-            try:
-                theta = inputbox.ask(screen, "Theta Value (int) (from pos X)")
-                theta = int(theta)
-                if theta < 360:
-                    forceList.append(Force(collidedNode, value, theta))
-                    collidedNode.takeForce(forceList[len(forceList) - 1])
-                    isValid = 1
-                else:
-                    raise (ValueError)
-            except ValueError:
-                print("Pls try again (angle)")
-        print("Force value is: " + str(value))
-        print("theta:" + str(theta))
 
 
 def createTesting():
