@@ -81,26 +81,57 @@ class Force:
         self.color = (52, 81, 94)
         self.value = value
         self.theta = -math.radians(theta)
-
-    def display(self):
         self.x1 = self.x + 21
         self.y1 = self.y + 21
         self.y2 = self.y1 + (self.value * math.sin(self.theta))
         self.x2 = self.x1 + (self.value * math.cos(self.theta))
+        self.myArrow = Arrow(self.color, self.value, self.theta, (self.x1, self.y1), (self.x2, self.y2))
+
+    def display(self):
+        self.myArrow.display()
+        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
+        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+
+
+class reactionForce:
+    def __init__(self, endNode):
+        self.node=endNode
+        self.startTup = (endNode.x + 21, endNode.y + 121)
+        self.theta = '?'
+        (self.x, self.y) = self.startTup
+        self.color = (220, 200, 200)
+        self.theta = -math.radians(90)
+        self.value = '?'
+        self.x1 = self.x
+        self.y1 = self.y
+        self.y2 = endNode.y + 42
+        self.x2 = endNode.x + 21
+        self.myArrow = Arrow(self.color, 100, -math.radians(90), (self.x1, self.y1), (self.x2, self.y2))
+
+    def display(self):
+        self.myArrow.display()
+        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
+        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+
+
+class Arrow:
+    def __init__(self, color, val, theta, (x1, y1), (x2, y2)):
+        self.color = color
+        self.theta = theta
+        self.value = val
+        (self.x1, self.y1) = (x1, y1)
+        (self.x2, self.y2) = (x2, y2)
         self.x3 = self.x2 + (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
         self.y3 = self.y2 + (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
         self.x4 = self.x2 - (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
         self.y4 = self.y2 - (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
         self.x5 = self.x2 + (.15 * self.value * math.cos(self.theta))
         self.y5 = self.y2 + (.15 * self.value * math.sin(self.theta))
+
+    def display(self):
         pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x2, self.y2), 10)
-        # pygame.draw.polygon(screen,self.color,((self.x2,self.y2-self.h),(self.x2,self.y2+self.h),(self.x2+self.w,self.y2)),0)
         pygame.draw.polygon(screen, self.color, ((self.x3, self.y3),
                                                  (self.x4, self.y4), (self.x5, self.y5)), 0)
-        # pygame.draw.circle(screen,self.color,(int(self.x3),int(self.y3)),10,1)
-
-        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
-        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
 
 class Button:
@@ -109,15 +140,14 @@ class Button:
         (self.x, self.y) = self.pos
         self.img = img
         self.actionName = actionName
-        self.success= False
-        self.pressed=0
-
+        self.success = False
+        self.pressed = 0
 
     def display(self):
         screen.blit(self.img, self.pos)
 
     def action(self):
-        self.pressed=self.pressed+1
+        self.pressed = self.pressed + 1
         if self.actionName == 'force':
             self.success = forceSolver()
 
@@ -125,23 +155,30 @@ class Button:
 def forceSolver():
     xVals = []
     yVals = []
-    mVals= []
+    mVals = []
     for f in forceList:
         xVals.append(f.value * math.cos(f.theta))
         yVals.append(f.value * math.sin((f.theta)))
     for n in nodeList:
-        #print(nodeList[0].id)
-        if nodeList.index(n)!=0:
-            (pX,pY)=(nodeList[0].x-n.x,nodeList[0].y-n.y)
+        # print(nodeList[0].id)
+        if nodeList.index(n) != 0:
+            (pX, pY) = (nodeList[0].x - n.x, nodeList[0].y - n.y)
             for f in n.fList:
-                (fX,fY)=(f.value*math.cos(f.theta),f.value*(math.sin(f.theta)))
-                m=pX*fY-pY*fX
+                (fX, fY) = (f.value * math.cos(f.theta), f.value * (math.sin(f.theta)))
+                m = pX * fY - pY * fX
+                print(m)
                 mVals.append(m)
-    mSum=int(sum(mVals))
-    #print(mSum)
+    mSum = int(sum(mVals))
+    # print(mSum)
     xSum = int(sum(xVals))
     ySum = int(sum(yVals))
-    if xSum == 0 & ySum == 0 & mSum==0:
+    if len(reactList)==1:
+        value=math.sqrt(xSum**2 + ySum**2)
+        theta=math.degrees(math.atan(ySum/xSum))
+        reactInterest=reactList.pop(0)
+        nodeInInterest=reactInterest.node
+        forceList.append(Force(nodeInInterest,value,theta))
+    elif xSum == 0 & ySum == 0 & mSum == 0:
         return True
     else:
         return False
@@ -170,7 +207,7 @@ def worldLabelDisplay():
     gameModeLabel = myFont.render("Game Mode: " + str(programMode), 2, (0, 0, 0))
     if solveButton.success:
         staticLabel = myFont.render(("Static Equilibrium"), 2, (0, 0, 0))
-    elif solveButton.pressed==0:
+    elif solveButton.pressed == 0:
         staticLabel = myFont.render(("Not solved"), 2, (0, 0, 0))
     else:
         staticLabel = myFont.render(("Not in static equilibrium "), 2, (0, 0, 0))
@@ -182,7 +219,7 @@ def worldLabelDisplay():
     elif programMode == 2:
         descriptionLabel = myFont.render("Member Connecting", 2, (0, 0, 0))
     elif programMode == 3:
-        descriptionLabel = descriptionLabel = myFont.render("Force input", 2,(0, 0, 0))
+        descriptionLabel = descriptionLabel = myFont.render("Force input", 2, (0, 0, 0))
     else:
         descriptionLabel = myFont.render("NULL", 2, (0, 0, 0))
 
@@ -213,35 +250,6 @@ def nodeBuilder():
         return None
 
 
-# def memberBuilder():
-#     def snapNode():
-#         nodeInInterest = memberSnapToNode(Member((mouseX - 21, mouseY - 21), len(memberList)))
-#         if nodeInInterest:
-#             print("Collided with: " + nodeInInterest.__class__.__name__ + " " + str(nodeInInterest.id))
-#             return nodeInInterest
-#         return False
-#
-#     collidedMember = checkCollide(memberList, mouseX, mouseY)
-#     if not collidedMember:
-#         nodeInInterest = snapNode()
-#         if nodeInInterest:
-#             print("start^")
-#             memberList.append(Member((nodeInInterest.x + 21, nodeInInterest.y + 21), len(memberList)))
-#     else:
-#         if collidedMember.__class__.__name__ == "list":
-#             if (len(collidedMember) > 1):
-#                 collidedMember = collidedMember[0]
-#         memb = checkCollide(memberList, mouseX, mouseY)
-#         if memb:
-#             if collidedMember.moving:
-#                 nodeInInterest = snapNode()
-#                 if nodeInInterest:
-#                     print"end^"
-#                     collidedMember.moving = not collidedMember.moving
-#                     (collidedMember.x, collidedMember.y) = (nodeInInterest.x, nodeInInterest.y)
-#                     # memToDel = memberList.index(collidedMember)
-#                     # return memToDel
-#                     # return None
 def memberBuilder2():
     collidedNode = checkCollide(nodeList, mouseX, mouseY)
     if collidedNode:
@@ -273,18 +281,23 @@ def forceBuilder():
         while not isValid:
             try:
                 value = inputbox.ask(screen, "Force Value (int)")
-                value = int(value)
+                if value == 'x':
+                    print('unknown value')
+                    theta = 't'
+                    r1 = reactionForce(collidedNode)
+                    reactList.append(r1)
+                else:
+                    value = int(value)
                 # value = int(raw_input("Please enter an integer value for this new force:"))
                 isValid = 1
-                print("Force value is: " + str(value))
+
             except ValueError:
                 print("Pls try again (value)")
         isValid = 0
-        while not isValid:
+        while not isValid and value != 'x':
             try:
                 theta = inputbox.ask(screen, "Theta Value (int) (from pos X)")
                 theta = int(theta)
-                print("theta:" + str(theta))
                 if theta < 360:
                     forceList.append(Force(collidedNode, value, theta))
                     collidedNode.takeForce(forceList[len(forceList) - 1])
@@ -293,52 +306,8 @@ def forceBuilder():
                     raise (ValueError)
             except ValueError:
                 print("Pls try again (angle)")
-
-
-def buttonChecker():
-    buttonCollided = checkCollide(buttonList, mouseX, mouseY)
-    if buttonCollided:
-        buttonCollided.action()
-
-
-# def memberSnapToNode(memberToCheck):
-#     for p in nodeList:
-#         nodeInInterest = checkCollide(memberToCheck, p.x, p.y)
-#         if nodeInInterest:
-#             return p
-#     return None
-
-
-# def debugger():
-#     var = checkCollide(nodeList, mouseX, mouseY)
-#     print("Node Colide: " + str(var))
-#     var = checkCollide(memberList, mouseX, mouseY)
-#     print("Member Collide: " + str(var))
-
-
-# Pygame Stuff
-pygame.init()
-screen = pygame.display.set_mode((800, 800))
-pygame.display.set_caption("Vinny's Truss Solver")
-clock = pygame.time.Clock()
-
-# Font Stuff
-# defaultFont = pygame.font.get_default_font()
-myFont = pygame.font.SysFont('Futura',
-                             18)  # IF this doesnt work, replace the string 'Futura' with the variable defaultFont
-
-# Main Global Variables
-nodeList = []
-memberList = []
-forceList = []
-buttonList = []
-programMode = 3  # mode 1:Node Building
-# mode 2: Member Connecting
-# mode 3: Force
-
-done = False
-checkForDelete = False
-makingMember = False
+        print("Force value is: " + str(value))
+        print("theta:" + str(theta))
 
 
 def createTesting():
@@ -375,6 +344,37 @@ def printOwners():
         for f in n.fList:
             print("Force" + str(f.value))
 
+
+def buttonChecker():
+    buttonCollided = checkCollide(buttonList, mouseX, mouseY)
+    if buttonCollided:
+        buttonCollided.action()
+
+
+# Pygame Stuff
+pygame.init()
+screen = pygame.display.set_mode((800, 800))
+pygame.display.set_caption("Vinny's Truss Solver")
+clock = pygame.time.Clock()
+
+# Font Stuff
+# defaultFont = pygame.font.get_default_font()
+myFont = pygame.font.SysFont('Futura',
+                             18)  # IF this doesnt work, replace the string 'Futura' with the variable defaultFont
+
+# Main Global Variables
+nodeList = []
+memberList = []
+forceList = []
+buttonList = []
+reactList = []
+programMode = 3  # mode 1:Node Building
+# mode 2: Member Connecting
+# mode 3: Force
+
+done = False
+checkForDelete = False
+makingMember = False
 
 createTesting()
 solveButton = Button((10, 75), buttonImg, 'force')
@@ -427,6 +427,8 @@ while not done:
         f.display()
     for p in nodeList:
         p.display()
+    for r in reactList:
+        r.display()
     if programMode == 3:
         for b in buttonList:
             b.display()
