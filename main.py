@@ -6,6 +6,7 @@ from pygame.locals import *
 nodeImg = pygame.image.load('imgs/node.png')  # 42px by 42px sprite of a node
 buttonImg = pygame.image.load('imgs/SolveButton.png')
 logoImg = pygame.image.load('imgs/logo.png')
+pinSuppImg=pygame.image.load('imgs/PinControl.png')
 
 
 class Node:
@@ -94,13 +95,13 @@ class Force:
 
 
 def forceBuilder():
-    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    collidedNode = checkCollide(nodeList, mouseX, mouseY, 42)
     if collidedNode:
         isValid = 0
         while not isValid:
             try:
                 value = inputbox.ask(screen, "Force Value (int)")
-                if value == 'x':
+                if value == 'pin':
                     print('unknown value')
                     theta = 't'
                     r1 = reactionForce(collidedNode)
@@ -113,7 +114,7 @@ def forceBuilder():
             except ValueError:
                 print("Pls try again (value)")
         isValid = 0
-        while not isValid and value != 'x':
+        while not isValid and value != 'pin':
             try:
                 theta = inputbox.ask(screen, "Theta Value (int) (from pos X)")
                 theta = int(theta)
@@ -142,10 +143,11 @@ class reactionForce:
         self.y1 = self.y
         self.y2 = endNode.y + 42
         self.x2 = endNode.x + 21
-        self.myArrow = Arrow(self.color, 100, -math.radians(90), (self.x1, self.y1), (self.x2, self.y2))
+        #self.myArrow = Arrow(self.color, 100, -math.radians(90), (self.x1, self.y1), (self.x2, self.y2))
 
     def display(self):
-        self.myArrow.display()
+        #self.myArrow.display()
+        screen.blit(pinSuppImg,(self.node.x-30,self.node.y+21))
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, (0, 0, 0))
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
@@ -227,13 +229,13 @@ class Button:
             self.success = forceSolver()
 
 
-def checkCollide(classList, x, y):
+def checkCollide(classList, x, y, r):
     var = classList.__class__.__name__
     if (var != "list"):
         classList = [classList]
     list = []
     for p in classList:
-        if abs(math.hypot(p.x - x, p.y - y)) <= 42:
+        if abs(math.hypot(p.x - x, p.y - y)) <= r:
             list = list + [p]
     if len(list) == 0:
         return None
@@ -278,14 +280,14 @@ def worldLabelDisplay():
 
 
 def nodeBuilder():
-    collidedNode = checkCollide(nodeList, mouseX, mouseY)  # checks to see mouse pos in relation to a node
+    collidedNode = checkCollide(nodeList, mouseX, mouseY,42)  # checks to see mouse pos in relation to a node
     # print("Mouse Pressed")
     if not collidedNode:  # if the variable DOES NOT exist then add a new Node
         nodeListLength = len(nodeList)
         nodeList.append(Node((mouseX - 21, mouseY - 21), nodeListLength))
         # print("New node added")
     else:
-        if not checkCollide(memberList, mouseX, mouseY):
+        if not checkCollide(memberList, mouseX, mouseY,42):
             collidedNode.moving = not collidedNode.moving
             indexToDel = nodeList.index(collidedNode)
         if collidedNode.moving:
@@ -294,7 +296,7 @@ def nodeBuilder():
 
 
 def memberBuilder2():
-    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    collidedNode = checkCollide(nodeList, mouseX, mouseY,42)
     if collidedNode:
         memberList.append(Member(collidedNode, len(memberList)))
         memInInterest = memberList[len(memberList) - 1]
@@ -308,7 +310,7 @@ def memberBuilder2():
 
 
 def memberEnder():
-    collidedNode = checkCollide(nodeList, mouseX, mouseY)
+    collidedNode = checkCollide(nodeList, mouseX, mouseY,42)
     if collidedNode:
         print("ended on: " + str(collidedNode.id))
         memInInterest = memberList[len(memberList) - 1]
@@ -353,7 +355,7 @@ def printOwners():
 
 
 def buttonChecker():
-    buttonCollided = checkCollide(buttonList, mouseX, mouseY)
+    buttonCollided = checkCollide(buttonList, mouseX, mouseY, 100)
     if buttonCollided:
         buttonCollided.action()
 
