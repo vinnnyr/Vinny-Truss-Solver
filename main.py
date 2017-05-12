@@ -1,5 +1,6 @@
 import pygame
 import inputbox
+import numpy as np
 import math
 from pygame.locals import *
 
@@ -182,6 +183,15 @@ def forceSolver():  # This func will solve for reaction forces
         print("Moments not zero : " + str(mSum))
     elif len(reactList) == 1:
         value = math.sqrt(xSum ** 2 + ySum ** 2)
+        posTup=(reactList(0).node.x,reactList(0).node.y)
+        zeroTup=(nodeList(0).x,nodeList(0).y)
+        (pX,pY)=getDistVec(posTup,zeroTup)
+        #Matrix should look like this
+        #[m pX -pY]
+        #[Fx 1  0]
+        #[Fy  0  1]
+
+
         theta = math.degrees(math.atan(ySum / xSum))
         reactInterest = reactList.pop(0)
         nodeInInterest = reactInterest.node
@@ -359,7 +369,20 @@ def buttonChecker():
     if buttonCollided:
         buttonCollided.action()
 
-
+def getDist(tup1,tup2):
+    (x1,y1)=tup1
+    (x2,y2)=tup2
+    dx=abs(x2-x1)
+    dy=abs(y2-y1)
+    dist=math.sqrt((dx**2)+(dy**2))
+    theta=math.atan(dy/dx)
+    return (dist,theta)
+def getDistVec(tup1,tup2):
+    (x1,y1)=tup1
+    (x2,y2)=tup2
+    dx=(x2-x1)
+    dy=(y2-y1)
+    return (dx,dy)
 # Pygame Stuff
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
