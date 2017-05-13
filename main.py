@@ -183,19 +183,21 @@ def forceSolver():  # This func will solve for reaction forces
         print("Moments not zero : " + str(mSum))
     elif len(reactList) == 1:
         value = math.sqrt(xSum ** 2 + ySum ** 2)
-        posTup=(reactList(0).node.x,reactList(0).node.y)
-        zeroTup=(nodeList(0).x,nodeList(0).y)
+        posTup=(reactList[0].node.x,reactList[0].node.y)
+        zeroTup=(nodeList[0].x,nodeList[0].y)
         (pX,pY)=getDistVec(posTup,zeroTup)
         #Matrix should look like this
-        #[m pX -pY]
+        #[m -pY pX]
         #[Fx 1  0]
         #[Fy  0  1]
+        A=np.array([[-pY,pX],[1,0],[0,1]])
+        B=np.array([[mSum],[xSum],[ySum]])
+        print(np.linalg.lstsq(A,B))
 
-
-        theta = math.degrees(math.atan(ySum / xSum))
-        reactInterest = reactList.pop(0)
-        nodeInInterest = reactInterest.node
-        forceList.append(Force(nodeInInterest, value, theta))
+        #theta = math.degrees(math.atan(-ySum / -xSum))
+        #reactInterest = reactList.pop(0)
+        #nodeInInterest = reactInterest.node
+        #forceList.append(Force(nodeInInterest, value, theta))
         return True
     else:
         return False
