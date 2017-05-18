@@ -11,6 +11,10 @@ black = (0, 0, 0)
 class Structure:
     def __init__(self):
         self.membList = []
+        self.display()
+        #self.testingScenario()
+
+
 
     def createMemb(self, pos):  # will be called when mouse is clicked
         if len(self.membList) > 0:  # If membList is populated
@@ -59,8 +63,9 @@ class Structure:
         self.forceMembPos((a, a + b), (a + b, a + b))
         self.forceMembPos((a, a), (a + b, a))
         self.forceMembPos((a + b, a), (a + b, a + b))
-        self.createForce((a, a + b), 'roller')
-        self.createForce((a + b, a + b), 'pin')
+        #self.createForce((a, a + b), 'roller')
+        #self.createForce((a + b, a + b), 'pin')
+        #self.createForce((a + b, a), 'vec')
 
     def getStartPos(self):
         list = []
@@ -68,9 +73,16 @@ class Structure:
             list.append(m.startPos)
         return list
 
+    def printInfo(self):
+        print("Number of Nodes: "+str(len(self.structNodes)))
+        print("Number of Members: "+str(len(self.membList)))
+
     def display(self):
         self.structNodes = []  # running list of all the nodes of the struct
+        #count=0
         for m in self.membList:
+            #print("memb "+ str(count) +" node count: " +str(len(m.nodeList)))
+            #count=count+1
             m.display()
             self.structNodes = self.structNodes + m.nodeList
 
@@ -89,8 +101,10 @@ class Member:
             self.endPos = (mouseX, mouseY)
             (self.x, self.y) = self.endPos
         pygame.draw.line(screen, self.color, self.startPos, self.endPos, 5)
-        if self.moving == False & len(self.nodeList) < 2:  # Each member only has two nodes
-            self.nodeList.append(Node(self.endPos, False))  # pygame.draw.circle(screen, grey, self.endPos, 15)
+        if self.moving == False:
+            if len(self.nodeList) < 2:  # Each member only has two nodes
+                #print(len(self.nodeList))
+                self.nodeList.append(Node(self.endPos, False))  # pygame.draw.circle(screen, grey, self.endPos, 15)
             (self.x, self.y) = self.endPos
         for n in self.nodeList:
             n.display()
@@ -111,6 +125,8 @@ class Node:
             self.forceList.append(PinSupport(pos))
         elif type == 'roller':
             self.forceList.append(Roller(pos))
+        elif type == 'vec':
+            self.forceList.append(VectorForce(pos, 50, 0))
 
     def display(self):
         pygame.draw.circle(screen, self.color, self.pos, self.r)
@@ -148,6 +164,43 @@ class Roller:
         pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
         pygame.draw.circle(screen, self.color, self.p4, 10, 0)
         pygame.draw.circle(screen, self.color, self.p5, 10, 0)
+
+
+class VectorForce:
+    def __init__(self, pos, value, angle):
+        self.pos = pos
+        self.value = value
+        self.theta = -math.radians(angle)
+        self.color = red
+        (self.x, self.y) = self.pos
+        self.x2 = self.x + (self.value * math.cos(self.theta))
+        self.y2 = self.y + (self.value * math.sin(self.theta))
+        self.myArrow = Arrow(self.color, self.value, self.theta, self.pos, (self.x2, self.y2))
+
+    def display(self):
+        self.myArrow.display()
+        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, red)
+        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+
+
+class Arrow:
+    def __init__(self, color, val, theta, (x1, y1), (x2, y2)):
+        self.color = color
+        self.theta = theta
+        self.value = val
+        (self.x1, self.y1) = (x1, y1)
+        (self.x2, self.y2) = (x2, y2)
+        self.x3 = self.x2 + (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
+        self.y3 = self.y2 + (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
+        self.x4 = self.x2 - (.15 * self.value * math.sin(-self.theta)) - 2 * math.cos(self.theta)
+        self.y4 = self.y2 - (.15 * self.value * math.cos(-self.theta)) - 2 * math.sin(self.theta)
+        self.x5 = self.x2 + (.15 * self.value * math.cos(self.theta))
+        self.y5 = self.y2 + (.15 * self.value * math.sin(self.theta))
+
+    def display(self):
+        pygame.draw.line(screen, self.color, (self.x1, self.y1), (self.x2, self.y2), 10)
+        pygame.draw.polygon(screen, self.color, ((self.x3, self.y3),
+                                                 (self.x4, self.y4), (self.x5, self.y5)), 0)
 
 
 def checkCollide(classList, pos, r):
@@ -191,9 +244,11 @@ mode = 0
 while not done:
     # Following section is to generte the intial testing struct
     count = count + 1
-    if count > 1:
-        if count < 5:
-            mainStruct.testingScenario()
+    # if count > 1:
+    #     if count < 5:
+    #         mainStruct.testingScenario()
+    #     elif count==:
+    #         mainStruct.printInfo()
 
     # Main Program:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
@@ -208,14 +263,22 @@ while not done:
                     fType = 'pin'
                 elif mode == 2:
                     fType = 'roller'
+                elif mode == 3:
+                    fType = 'vec'
+
+
                 mainStruct.createForce((mouseX, mouseY), fType)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_0:
                 mode = 0
             elif event.key == pygame.K_1:
-                mode = 1
+                mode = 1 #pin
             elif event.key == pygame.K_2:
-                mode = 2
+                mode = 2 #roller
+                mainStruct.printInfo()
+            elif event.key == pygame.K_3:
+                mode = 3 #ved
+               # mainStruct.testingScenario()
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
