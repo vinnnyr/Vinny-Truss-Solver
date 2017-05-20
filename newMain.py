@@ -10,7 +10,9 @@ black = (0, 0, 0)
 # A Structure has a list of Members, and a member has a list of nodes
 class Structure:
     def __init__(self):
+        self.structNodes = []  # running list of all the nodes of the struct
         self.membList = []
+        self.newMembAdded= False
         self.display()
         self.testingScenario()
 
@@ -32,7 +34,7 @@ class Structure:
                     if var.__class__.__name__ == 'list':
                         var = var[0]  # this condition happens when you trace over members
                     # self.addMemb(lastMemb.endPos)  # start new memb
-                    self.addMemb(var.endPos,var)
+                    self.addMemb(var.endPos)
         else:  # No membList population, start one.
             self.addMemb((mouseX, mouseY))
 
@@ -48,6 +50,7 @@ class Structure:
 
     def addMemb(self, pos):
         self.membList.append(Member(pos))
+        self.newMembAdded=True
 
     def forceMembPos(self, pos1, pos2):
         self.addMemb(pos1)
@@ -59,9 +62,13 @@ class Structure:
         a = 300
         b = 150
         self.forceMembPos((a, a), (a, a + b))
+        self.display()
         self.forceMembPos((a, a + b), (a + b, a))
+        self.display()
         self.forceMembPos((a, a + b), (a + b, a + b))
+        self.display()
         self.forceMembPos((a, a), (a + b, a))
+        self.display()
         self.forceMembPos((a + b, a), (a + b, a + b))
         self.display()
         self.createForce((a, a + b), 'roller')
@@ -75,19 +82,16 @@ class Structure:
 
     def printInfo(self):
         print("Number of Nodes: " + str(len(self.structNodes)))
-        #for n in self.structNodes:
-         #   print(n)
         print("Number of Members: " + str(len(self.membList)))
 
     def display(self):
-        self.structNodes = []  # running list of all the nodes of the struct
-        # count=0
         for m in self.membList:
-            # print("memb "+ str(count) +" node count: " +str(len(m.nodeList)))
-            # count=count+1
             m.display()
-            self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
-
+        if self.newMembAdded:
+            self.l = len(self.membList)
+            self.lastMemb = self.membList[self.l - 1]
+            self.structNodes = self.structNodes + self.lastMemb.nodeList
+            self.newMembAdded = False
 
 class Member:
     def __init__(self, startPos):
