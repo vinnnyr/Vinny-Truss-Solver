@@ -12,9 +12,7 @@ class Structure:
     def __init__(self):
         self.membList = []
         self.display()
-        #self.testingScenario()
-
-
+        self.testingScenario()
 
     def createMemb(self, pos):  # will be called when mouse is clicked
         if len(self.membList) > 0:  # If membList is populated
@@ -34,7 +32,7 @@ class Structure:
                     if var.__class__.__name__ == 'list':
                         var = var[0]  # this condition happens when you trace over members
                     # self.addMemb(lastMemb.endPos)  # start new memb
-                    self.addMemb(var.endPos)
+                    self.addMemb(var.endPos,var)
         else:  # No membList population, start one.
             self.addMemb((mouseX, mouseY))
 
@@ -45,6 +43,8 @@ class Structure:
                 var = var[0]  # this condition happens when you trace over members
             nodeInInterest = var
             nodeInInterest.addForce((nodeInInterest.x, nodeInInterest.y), type)
+        else:
+            print(' ')
 
     def addMemb(self, pos):
         self.membList.append(Member(pos))
@@ -63,10 +63,10 @@ class Structure:
         self.forceMembPos((a, a + b), (a + b, a + b))
         self.forceMembPos((a, a), (a + b, a))
         self.forceMembPos((a + b, a), (a + b, a + b))
-        #self.createForce((a, a + b), 'roller')
-        #self.createForce((a + b, a + b), 'pin')
-        #self.createForce((a + b, a), 'vec')
-
+        self.display()
+        self.createForce((a, a + b), 'roller')
+        self.createForce((a + b, a + b), 'pin')
+        self.createForce((a + b, a), 'vec')
     def getStartPos(self):
         list = []
         for m in self.membList:
@@ -74,17 +74,19 @@ class Structure:
         return list
 
     def printInfo(self):
-        print("Number of Nodes: "+str(len(self.structNodes)))
-        print("Number of Members: "+str(len(self.membList)))
+        print("Number of Nodes: " + str(len(self.structNodes)))
+        #for n in self.structNodes:
+         #   print(n)
+        print("Number of Members: " + str(len(self.membList)))
 
     def display(self):
         self.structNodes = []  # running list of all the nodes of the struct
-        #count=0
+        # count=0
         for m in self.membList:
-            #print("memb "+ str(count) +" node count: " +str(len(m.nodeList)))
-            #count=count+1
+            # print("memb "+ str(count) +" node count: " +str(len(m.nodeList)))
+            # count=count+1
             m.display()
-            self.structNodes = self.structNodes + m.nodeList
+            self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
 
 
 class Member:
@@ -92,7 +94,7 @@ class Member:
         self.startPos = startPos
         # self.endPos = (mouseX, mouseY)
         self.nodeList = []
-        self.nodeList.append(Node(self.startPos, True))  # pygame.draw.circle(screen, grey, self.startPos, 15)
+        self.nodeList.append(Node(self.startPos, True))
         self.color = white  # white
         self.moving = True
 
@@ -103,7 +105,7 @@ class Member:
         pygame.draw.line(screen, self.color, self.startPos, self.endPos, 5)
         if self.moving == False:
             if len(self.nodeList) < 2:  # Each member only has two nodes
-                #print(len(self.nodeList))
+                # print(len(self.nodeList))
                 self.nodeList.append(Node(self.endPos, False))  # pygame.draw.circle(screen, grey, self.endPos, 15)
             (self.x, self.y) = self.endPos
         for n in self.nodeList:
@@ -266,19 +268,18 @@ while not done:
                 elif mode == 3:
                     fType = 'vec'
 
-
                 mainStruct.createForce((mouseX, mouseY), fType)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_0:
                 mode = 0
             elif event.key == pygame.K_1:
-                mode = 1 #pin
+                mode = 1  # pin
             elif event.key == pygame.K_2:
-                mode = 2 #roller
+                mode = 2  # roller
                 mainStruct.printInfo()
             elif event.key == pygame.K_3:
-                mode = 3 #ved
-               # mainStruct.testingScenario()
+                mode = 3  # ved
+                # mainStruct.testingScenario()
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
