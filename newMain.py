@@ -32,7 +32,7 @@ class Structure:
                     if var.__class__.__name__ == 'list':
                         var = var[0]  # this condition happens when you trace over members
                     # self.addMemb(lastMemb.endPos)  # start new memb
-                    self.addMemb(var.endPos,var)
+                    self.addMemb(var.endPos)
         else:  # No membList population, start one.
             self.addMemb((mouseX, mouseY))
 
@@ -47,7 +47,7 @@ class Structure:
             print(' ')
 
     def addMemb(self, pos):
-        self.membList.append(Member(pos))
+        self.membList.append(Member(pos,self))
 
     def forceMembPos(self, pos1, pos2):
         self.addMemb(pos1)
@@ -90,10 +90,12 @@ class Structure:
 
 
 class Member:
-    def __init__(self, startPos):
+    def __init__(self, startPos,struct):
         self.startPos = startPos
+        self.myStruct=struct
         # self.endPos = (mouseX, mouseY)
         self.nodeList = []
+        #self.var=checkCollide()
         self.nodeList.append(Node(self.startPos, True))
         self.color = white  # white
         self.moving = True
@@ -272,11 +274,11 @@ while not done:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_0:
                 mode = 0
+                mainStruct.printInfo()
             elif event.key == pygame.K_1:
                 mode = 1  # pin
             elif event.key == pygame.K_2:
                 mode = 2  # roller
-                mainStruct.printInfo()
             elif event.key == pygame.K_3:
                 mode = 3  # ved
                 # mainStruct.testingScenario()
