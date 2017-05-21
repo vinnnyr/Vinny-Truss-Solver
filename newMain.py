@@ -12,9 +12,9 @@ class Structure:
     def __init__(self):
         self.membList = []
         self.structNodes = []  # running list of all the nodes of the struct
-        self.memberAdded= False
+        self.memberAdded = False
         self.display()
-        #self.testingScenario()
+        # self.testingScenario()
 
     def createMemb(self, pos):  # will be called when mouse is clicked
         if len(self.membList) > 0:  # If membList is populated
@@ -46,11 +46,11 @@ class Structure:
             nodeInInterest = var
             nodeInInterest.addForce((nodeInInterest.x, nodeInInterest.y), type)
         else:
-            print(' ')
+            print('something weird happened')  # This is where a force is not attached to a node
 
     def addMemb(self, pos):
         self.membList.append(Member(pos, self))
-        self.memberAdded=True
+        self.memberAdded = True
 
     def forceMembPos(self, pos1, pos2):
         self.addMemb(pos1)
@@ -62,36 +62,52 @@ class Structure:
         a = 300
         b = 150
         self.forceMembPos((a, a), (a, a + b))
+        self.printMembInfo()
         self.forceMembPos((a, a + b), (a + b, a))
+        self.printMembInfo()
         self.forceMembPos((a, a + b), (a + b, a + b))
+        self.printMembInfo()
         self.forceMembPos((a, a), (a + b, a))
+        self.printMembInfo()
         self.forceMembPos((a + b, a), (a + b, a + b))
-        self.display()
+        self.printMembInfo()
         self.createForce((a, a + b), 'roller')
+        #self.printMembInfo()
         self.createForce((a + b, a + b), 'pin')
+        #self.printMembInfo()
         self.createForce((a + b, a), 'vec')
+        #self.printMembInfo()
 
     def getStartPos(self):
         list = []
         for m in self.membList:
             list.append(m.startPos)
         return list
+    def printMembInfo(self):
+        self.display()
+        self.membInInterest=self.membList[len(self.membList)-1]
+        print("Member Numb: " + str(len(self.membList)))
+        print('....')
+        self.tempNodeList=self.membInInterest.nodeList
+        for n in self.tempNodeList:
+            print(n)
+        print('-----------------')
 
     def printInfo(self):
         print("Number of Nodes: " + str(len(self.structNodes)))
         # for n in self.structNodes:
-        #    print(n)
+        #     print(n)
         print("Number of Members: " + str(len(self.membList)))
 
     def display(self):
-        #self.structNodes = []  # running list of all the nodes of the struct
+        # self.structNodes = []  # running list of all the nodes of the struct
         if self.memberAdded:
-            self.structNodes = self.structNodes + self.membList[len(self.membList)-1].nodeList
-            self.memberAdded= False
-            self.structNodes=list(set(self.structNodes)) #This is a a trick to remove duplicates
+            self.structNodes = self.structNodes + self.membList[len(self.membList) - 1].nodeList
+            self.memberAdded = False
+            self.structNodes = list(set(self.structNodes))  # This is a a trick to remove duplicates
         for m in self.membList:
             m.display()
-            #self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
+            # self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
 
 
 class Member:
@@ -101,17 +117,24 @@ class Member:
         # self.endPos = (mouseX, mouseY)
         self.nodeList = []
         # self.nodeList.append(Node(self.startPos, True))
-        self.var = checkCollide(struct.structNodes, startPos, 2)
-        if self.var:
-            if self.var.__class__.__name__ == 'list':
-                self.var = self.var[0]  # this condition happens when you trace over members
-            self.nodeList.append(self.var)
-            # print(self.var)
-            # print('    ')
-        else:
-            self.nodeList.append(Node(self.startPos, True))
+        self.addNode(startPos, True)
         self.color = white  # white
         self.moving = True
+
+    def addNode(self, pos, isStartNode):  # Create new node if there isn't one in the pos in question
+        self.var = checkCollide(self.myStruct.structNodes, pos, 2)
+        if self.var:
+            if self.var.__class__.__name__ == 'list':
+                self.var = self.var[0]  # To take care of duplicaes
+            self.nodeList.append(self.var)
+        else:
+            self.nodeList.append(Node(pos, isStartNode))  # Create new Node
+
+    def endMember(self, pos):
+        if len(self.nodeList) < 2:  # Each member only has two nodes
+            # print(len(self.nodeList))
+            self.addNode(self.endPos, False)
+        (self.x, self.y) = self.endPos
 
     def display(self):
         if self.moving:
@@ -119,11 +142,7 @@ class Member:
             (self.x, self.y) = self.endPos
         pygame.draw.line(screen, self.color, self.startPos, self.endPos, 5)
         if self.moving == False:
-            if len(self.nodeList) < 2:  # Each member only has two nodes
-                # print(len(self.nodeList))
-                self.nodeList.append(Node(self.endPos, False))  # pygame.draw.circle(screen, grey, self.endPos, 15)
-            (self.x, self.y) = self.endPos
-
+            self.endMember(self.endPos)
         if len(self.nodeList) == 2:
             self.startNode = self.nodeList[0]
             self.endNode = self.nodeList[1]
@@ -299,7 +318,8 @@ while not done:
                 mode = 2  # roller
             elif event.key == pygame.K_3:
                 mode = 3  # ved
-                # mainStruct.testingScenario()
+            elif event.key == pygame.K_a:
+                mainStruct.testingScenario()
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
