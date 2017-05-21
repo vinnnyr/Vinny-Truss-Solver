@@ -88,12 +88,12 @@ class Structure:
     def printMembInfo(self):
         self.display()
         self.membInInterest=self.membList[len(self.membList)-1]
-        print("Member Numb: " + str(len(self.membList)))
-        print('....')
+        # print("Member Numb: " + str(len(self.membList)))
+        # print('....')
         self.tempNodeList=self.membInInterest.nodeList
-        for n in self.tempNodeList:
-            print(n)
-        print('-----------------')
+        # for n in self.tempNodeList:
+        #     print(n)
+        # print('-----------------')
 
     def printInfo(self):
         print("Number of Nodes: " + str(len(self.structNodes)))
@@ -110,6 +110,14 @@ class Structure:
         for m in self.membList:
             m.display()
             # self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
+    def get(self):
+        for m in self.membList:
+            node1=m.nodeList[0]
+            node2=m.nodeList[1]
+            unit1=getUnit(node1.pos,node2.pos)
+            print(unit1)
+            unit2=getUnit(node2.pos,node1.pos)
+            print(unit2)
 
 
 class Member:
@@ -161,7 +169,7 @@ class Node:
         (self.x, self.y) = pos
         self.color = grey
         self.forceList = []
-        self.label=myFont.render(str(self.pos),1, red)
+        #self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type):
         # print(type)
@@ -174,7 +182,7 @@ class Node:
 
     def display(self):
         pygame.draw.circle(screen, self.color, self.pos, self.r)
-        screen.blit(self.label,self.pos)
+        #screen.blit(self.label,self.pos)
         for f in self.forceList:
             f.display()
 
@@ -273,6 +281,14 @@ def checkCollide(classList, pos, r):
     else:
         return list
 
+def getUnit(pos1,pos2):
+    (x1,y1)=pos1
+    (x2,y2)=pos2
+    (dx,dy)=(x2-x1,y2-y1)
+    mag=math.sqrt(dx**2 + dy**2)
+    unit=(dx/mag,dy/mag)
+    return unit #unit is a tuple, unit vec
+
 
 # Pygame Stuff
 pygame.init()
@@ -317,6 +333,8 @@ while not done:
                 mode = 3  # ved
             elif event.key == pygame.K_a:
                 mainStruct.testingScenario()
+            elif event.key == pygame.K_s:
+                mainStruct.get()
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
