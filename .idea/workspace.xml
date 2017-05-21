@@ -23,10 +23,16 @@
       <file leaf-file-name="newMain.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/newMain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1395">
-              <caret line="93" column="34" lean-forward="true" selection-start-line="93" selection-start-column="34" selection-end-line="93" selection-end-column="34" />
+            <state relative-caret-position="848">
+              <caret line="59" column="34" lean-forward="false" selection-start-line="59" selection-start-column="34" selection-end-line="59" selection-end-column="34" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#6000#6737#0" expanded="false" />
+                <element signature="e#8539#9559#0" expanded="false" />
+                <element signature="e#9603#10352#0" expanded="false" />
+                <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+                <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+                <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
               </folding>
             </state>
           </provider>
@@ -51,6 +57,7 @@
       <find>nodeList</find>
       <find>var</find>
       <find>printIn</find>
+      <find>moving</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -358,7 +365,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="39" />
+      <option name="time" value="41" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -404,6 +411,12 @@
           <caret line="19" column="31" lean-forward="true" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#6000#6737#0" expanded="false" />
+            <element signature="e#8539#9559#0" expanded="false" />
+            <element signature="e#9603#10352#0" expanded="false" />
+            <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
           </folding>
         </state>
       </provider>
@@ -449,6 +462,12 @@
           <caret line="288" column="0" lean-forward="true" selection-start-line="288" selection-start-column="0" selection-end-line="288" selection-end-column="0" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#6000#6737#0" expanded="false" />
+            <element signature="e#8539#9559#0" expanded="false" />
+            <element signature="e#9603#10352#0" expanded="false" />
+            <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
           </folding>
         </state>
       </provider>
@@ -494,6 +513,12 @@
           <caret line="66" column="9" lean-forward="false" selection-start-line="66" selection-start-column="9" selection-end-line="66" selection-end-column="9" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#6000#6737#0" expanded="false" />
+            <element signature="e#8539#9559#0" expanded="false" />
+            <element signature="e#9603#10352#0" expanded="false" />
+            <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
           </folding>
         </state>
       </provider>
@@ -539,6 +564,12 @@
           <caret line="77" column="9" lean-forward="false" selection-start-line="77" selection-start-column="9" selection-end-line="77" selection-end-column="9" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#6000#6737#0" expanded="false" />
+            <element signature="e#8539#9559#0" expanded="false" />
+            <element signature="e#9603#10352#0" expanded="false" />
+            <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1030,10 +1061,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/newMain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1395">
-          <caret line="93" column="34" lean-forward="true" selection-start-line="93" selection-start-column="34" selection-end-line="93" selection-end-column="34" />
+        <state relative-caret-position="848">
+          <caret line="59" column="34" lean-forward="false" selection-start-line="59" selection-start-column="34" selection-end-line="59" selection-end-column="34" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#6000#6737#0" expanded="false" />
+            <element signature="e#8539#9559#0" expanded="false" />
+            <element signature="e#9603#10352#0" expanded="false" />
+            <marker date="1495383926000" expanded="false" signature="6829:7163" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7253:7803" ph="..." />
+            <marker date="1495383926000" expanded="false" signature="7883:8492" ph="..." />
           </folding>
         </state>
       </provider>

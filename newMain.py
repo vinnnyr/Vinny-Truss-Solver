@@ -57,6 +57,8 @@ class Structure:
         membInFocus = self.membList[len(self.membList) - 1]
         membInFocus.moving = False
         membInFocus.endPos = pos2
+        membInFocus.endMember(pos2)
+        self.memberAdded= True
 
     def testingScenario(self):  # This function generates a known truss
         a = 300
@@ -159,6 +161,7 @@ class Node:
         (self.x, self.y) = pos
         self.color = grey
         self.forceList = []
+        self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type):
         # print(type)
@@ -171,12 +174,14 @@ class Node:
 
     def display(self):
         pygame.draw.circle(screen, self.color, self.pos, self.r)
+        screen.blit(self.label,self.pos)
         for f in self.forceList:
             f.display()
 
 
 # The following 3 classes are types of Forces
 
+#Can support x and y forces
 class PinSupport:
     def __init__(self, pos):
         self.pos = pos
@@ -189,7 +194,7 @@ class PinSupport:
         self.p3 = (self.x + 37, self.y + 50)
         pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
 
-
+#Can only support one force in a certain direction (typically straight up)
 class Roller:
     def __init__(self, pos):
         self.pos = pos
@@ -206,7 +211,7 @@ class Roller:
         pygame.draw.circle(screen, self.color, self.p4, 10, 0)
         pygame.draw.circle(screen, self.color, self.p5, 10, 0)
 
-
+#A vector force defined by value and angle from horz X axis
 class VectorForce:
     def __init__(self, pos, value, angle):
         self.pos = pos
@@ -223,7 +228,7 @@ class VectorForce:
         self.fLabel = myFont.render("Force Value: " + str(self.value), 2, red)
         screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
-
+#Arrow used for VectorForce
 class Arrow:
     def __init__(self, color, val, theta, (x1, y1), (x2, y2)):
         self.color = color
@@ -283,14 +288,6 @@ count = 0
 done = False
 mode = 0
 while not done:
-    # Following section is to generte the intial testing struct
-    count = count + 1
-    # if count > 1:
-    #     if count < 5:
-    #         mainStruct.testingScenario()
-    #     elif count==:
-    #         mainStruct.printInfo()
-
     # Main Program:
     (mouseX, mouseY) = pygame.mouse.get_pos()  # Global Variables mouseX and mouseY
     for event in pygame.event.get():
