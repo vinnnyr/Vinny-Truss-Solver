@@ -4,6 +4,7 @@ import math
 white = (255, 255, 255)
 grey = (96, 125, 139)
 red = (244, 67, 54)
+green =  (10,151,41)
 black = (0, 0, 0)
 
 
@@ -58,7 +59,7 @@ class Structure:
         membInFocus.moving = False
         membInFocus.endPos = pos2
         membInFocus.endMember(pos2)
-        self.memberAdded= True
+        self.memberAdded = True
 
     def testingScenario(self):  # This function generates a known truss
         a = 300
@@ -74,23 +75,24 @@ class Structure:
         self.forceMembPos((a + b, a), (a + b, a + b))
         self.printMembInfo()
         self.createForce((a, a + b), 'roller')
-        #self.printMembInfo()
+        # self.printMembInfo()
         self.createForce((a + b, a + b), 'pin')
-        #self.printMembInfo()
+        # self.printMembInfo()
         self.createForce((a + b, a), 'vec')
-        #self.printMembInfo()
+        # self.printMembInfo()
 
     def getStartPos(self):
         list = []
         for m in self.membList:
             list.append(m.startPos)
         return list
+
     def printMembInfo(self):
         self.display()
-        self.membInInterest=self.membList[len(self.membList)-1]
+        self.membInInterest = self.membList[len(self.membList) - 1]
         # print("Member Numb: " + str(len(self.membList)))
         # print('....')
-        self.tempNodeList=self.membInInterest.nodeList
+        self.tempNodeList = self.membInInterest.nodeList
         # for n in self.tempNodeList:
         #     print(n)
         # print('-----------------')
@@ -110,14 +112,18 @@ class Structure:
         for m in self.membList:
             m.display()
             # self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
+
     def get(self):
         for m in self.membList:
-            node1=m.nodeList[0]
-            node2=m.nodeList[1]
-            unit1=getUnit(node1.pos,node2.pos)
-            print(unit1)
-            unit2=getUnit(node2.pos,node1.pos)
-            print(unit2)
+            node1 = m.nodeList[0]
+            node2 = m.nodeList[1]
+            unit1 = getUnit(node1.pos, node2.pos)
+            (self.temp1,self.temp2)=unit1
+            unit2=(-self.temp1,-self.temp2)
+            node1.forceList.append(memberForce(node1.pos,unit1,False))
+            node2.forceList.append(memberForce(node2.pos, unit2, True))
+            print('Unit 1:' + str(unit1))
+            print('Unit 2:' + str(unit2))
 
 
 class Member:
@@ -169,7 +175,7 @@ class Node:
         (self.x, self.y) = pos
         self.color = grey
         self.forceList = []
-        #self.label=myFont.render(str(self.pos),1, red)
+        # self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type):
         # print(type)
@@ -178,18 +184,18 @@ class Node:
         elif type == 'roller':
             self.forceList.append(Roller(pos))
         elif type == 'vec':
-            self.forceList.append(VectorForce(pos, 50, 0))
+            self.forceList.append(VectorForce(pos, 50, 0,True))
 
     def display(self):
         pygame.draw.circle(screen, self.color, self.pos, self.r)
-        #screen.blit(self.label,self.pos)
+        # screen.blit(self.label,self.pos)
         for f in self.forceList:
             f.display()
 
 
 # The following 3 classes are types of Forces
 
-#Can support x and y forces
+# Can support x and y forces
 class PinSupport:
     def __init__(self, pos):
         self.pos = pos
@@ -202,7 +208,8 @@ class PinSupport:
         self.p3 = (self.x + 37, self.y + 50)
         pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
 
-#Can only support one force in a certain direction (typically straight up)
+
+# Can only support one force in a certain direction (typically straight up)
 class Roller:
     def __init__(self, pos):
         self.pos = pos
@@ -219,9 +226,10 @@ class Roller:
         pygame.draw.circle(screen, self.color, self.p4, 10, 0)
         pygame.draw.circle(screen, self.color, self.p5, 10, 0)
 
-#A vector force defined by value and angle from horz X axis
+
+# A vector force defined by value and angle from horz X axis
 class VectorForce:
-    def __init__(self, pos, value, angle):
+    def __init__(self, pos, value, angle,label):
         self.pos = pos
         self.value = value
         self.theta = -math.radians(angle)
@@ -230,13 +238,41 @@ class VectorForce:
         self.x2 = self.x + (self.value * math.cos(self.theta))
         self.y2 = self.y + (self.value * math.sin(self.theta))
         self.myArrow = Arrow(self.color, self.value, self.theta, self.pos, (self.x2, self.y2))
+        self.displayLabel=label
 
     def display(self):
         self.myArrow.display()
-        self.fLabel = myFont.render("Force Value: " + str(self.value), 2, red)
-        screen.blit(self.fLabel, (self.x2 + 21, self.y2))
+        if self.displayLabel:
+            self.fLabel = myFont.render("Force Value: " + str(self.value), 2, red)
+            screen.blit(self.fLabel, (self.x2 + 21, self.y2))
 
-#Arrow used for VectorForce
+
+class memberForce:
+    def __init__(self, pos, unit, flip):
+        (self.u1,self.u2)=unit
+        if self.u1==0:
+            if self.u2>0:
+                self.theta=90
+            else:
+                self.theta=270
+        else:
+            self.theta = math.degrees(-math.atan(self.u2 / self.u1))
+        # if self.u1>0:
+        #     if self.u2>0:
+        #         self.theta=self.theta
+        #     else:
+        #         self.theta=self.theta+90
+
+        print(self.theta)
+        self.myVec = VectorForce(pos, 50, self.theta, False)
+        self.myVec.myArrow.color=green
+        self.myVec.value = '?'
+
+    def display(self):
+        self.myVec.display()
+
+
+# Arrow used for VectorForce
 class Arrow:
     def __init__(self, color, val, theta, (x1, y1), (x2, y2)):
         self.color = color
@@ -281,13 +317,14 @@ def checkCollide(classList, pos, r):
     else:
         return list
 
-def getUnit(pos1,pos2):
-    (x1,y1)=pos1
-    (x2,y2)=pos2
-    (dx,dy)=(x2-x1,y2-y1)
-    mag=math.sqrt(dx**2 + dy**2)
-    unit=(dx/mag,dy/mag)
-    return unit #unit is a tuple, unit vec
+
+def getUnit(pos1, pos2):
+    (x1, y1) = pos1
+    (x2, y2) = pos2
+    (dx, dy) = (x2 - x1, y2 - y1)
+    mag = math.sqrt(dx ** 2 + dy ** 2)
+    unit = (dx / mag, dy / mag)
+    return unit  # unit is a tuple, unit vec
 
 
 # Pygame Stuff
@@ -296,9 +333,8 @@ screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("Vinny's Truss Solver")
 clock = pygame.time.Clock()
 # defaultFont = pygame.font.get_default_font()
-myFont = pygame.font.SysFont(
-    'Futura',
-    18)  # IF this doesnt work, replace the string 'Futura' with the variable defaultFont
+myFont = pygame.font.SysFont('Futura',
+                             18)  # IF this doesnt work, replace the string 'Futura' with the variable defaultFont
 mainStruct = Structure()  # init structure
 count = 0
 done = False
