@@ -137,9 +137,10 @@ class Structure:
                 # print('Unit 2:' + str(unit2))
             for n in self.structNodes:
                 for f in n.forceList:
-                    #if f.__class__.__name__ == 'Pin':
+                    if f.__class__.__name__ == 'Pin':
                         #print("Pin support in this node")
-                    if f.__class__.__name__ == 'Roller':
+                        f.resolve()
+                    elif f.__class__.__name__ == 'Roller':
                         f.resolve()
                         #print("Rolelr support in this node")
                     #else:
@@ -227,11 +228,30 @@ class Pin:
         self.color = red
         self.id = 0
 
-    def display(self):
+        #Dispaly Constants
         self.p1 = self.pos
         self.p2 = (self.x - 37, self.y + 50)
         self.p3 = (self.x + 37, self.y + 50)
-        pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
+
+        self.resolved= False
+
+    def resolve(self):
+        self.myVec1 = VectorForce(self.pos, 50, 90, False)
+        self.myVec1.myArrow.color = green
+        self.myVec1.value = '?'
+
+        self.myVec2 = VectorForce(self.pos, 50, 180, False)
+        self.myVec2.myArrow.color = green
+        self.myVec2.value = '?'
+
+        self.resolved = True
+
+    def display(self):
+        if not self.resolved:
+            pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
+        else:
+            self.myVec1.display()
+            self.myVec2.display()
 
 
 # Can only support one force in a certain direction (typically straight up)
