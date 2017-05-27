@@ -47,8 +47,8 @@ class Structure:
             if var.__class__.__name__ == 'list':
                 var = var[0]  # this condition happens when you trace over members
             nodeInInterest = var
-            forceCount= forceCount+1
-            id=forceCount
+            forceCount = forceCount + 1
+            id = forceCount
             nodeInInterest.addForce((nodeInInterest.x, nodeInInterest.y), type, id)
         else:
             print('something weird happened')  # This is where a force is not attached to a node
@@ -79,11 +79,11 @@ class Structure:
         self.forceMembPos((a + b, a), (a + b, a + b))
         self.printMembInfo()
         self.createForce((a, a + b), 'roller')
-        # self.printMembInfo()
+        self.printMembInfo()
         self.createForce((a + b, a + b), 'pin')
-        # self.printMembInfo()
+        self.printMembInfo()
         self.createForce((a + b, a), 'vec')
-        # self.printMembInfo()
+        self.printMembInfo()
 
     def getStartPos(self):
         list = []
@@ -113,18 +113,37 @@ class Structure:
             # self.structNodes = self.structNodes + m.nodeList  # This is inefiicient, creatign a whole new list everytime
 
     def get(self):
+        self.printInfo()
         global forceCount
         for m in self.membList:
-            node1 = m.nodeList[0]
+            node1 = m.nodeList[0]  # getting the two nodes of each member
             node2 = m.nodeList[1]
             unit1 = getUnit(node1.pos, node2.pos)
             (self.temp1, self.temp2) = unit1
             unit2 = (-self.temp1, -self.temp2)
             node1.forceList.append(memberForce(node1.pos, unit1, True, forceCount))
             node2.forceList.append(memberForce(node2.pos, unit2, False, forceCount))
-            forceCount+=1
-            # print('Unit 1:' + str(unit1))
-            # print('Unit 2:' + str(unit2))
+            forceCount += 1
+            for n in m.nodeList:
+                print("Number of Forces: " + str(len(n.forceList)))
+                #     for f in n.forceList:
+                #         if f.__class__.__name__ == 'Pin':
+                #             print("Pin support in this node")
+                #         elif f.__class__.__name__ == 'Roller':
+                #             print("Rolelr support in this node")
+                #         else:
+                #             print("No Pin or Roller")
+                # print('Unit 1:' + str(unit1))
+                # print('Unit 2:' + str(unit2))
+            for n in self.structNodes:
+                for f in n.forceList:
+                    #if f.__class__.__name__ == 'Pin':
+                        #print("Pin support in this node")
+                    if f.__class__.__name__ == 'Roller':
+                        f.resolve()
+                        #print("Rolelr support in this node")
+                    #else:
+                        #print("No Pin or Roller")
 
 
 class Member:
@@ -181,32 +200,32 @@ class Node:
     def addForce(self, pos, type, id):
         # print(type)
         if type == 'pin':
-            self.forceList.append(PinSupport(pos))
+            self.forceList.append(Pin(pos))
         elif type == 'roller':
             self.forceList.append(Roller(pos))
         elif type == 'vec':
             self.forceList.append(VectorForce(pos, 50, 0, True))
-        obj=self.forceList[(len(self.forceList)-1)]
-        obj.id=id
+        obj = self.forceList[(len(self.forceList) - 1)]
+        obj.id = id
 
     def display(self):
         pygame.draw.circle(screen, self.color, self.pos, self.r)
         # screen.blit(self.label,self.pos)
         for f in self.forceList:
             f.display()
-            print(f.__class__.__name__)
-            print(f.id)
+            # print(f.__class__.__name__)
+            # print(f.id)
 
 
 # The following 3 classes are types of Forces
 
 # Can support x and y forces
-class PinSupport:
+class Pin:
     def __init__(self, pos):
         self.pos = pos
         (self.x, self.y) = self.pos
         self.color = red
-        self.id=0
+        self.id = 0
 
     def display(self):
         self.p1 = self.pos
@@ -221,17 +240,29 @@ class Roller:
         self.pos = pos
         (self.x, self.y) = self.pos
         self.color = red
-        self.id=0
-
-    def display(self):
+        self.id = 0
+        # Display Cosntants
         self.p1 = self.pos
         self.p2 = (self.x - 37, self.y + 35)
         self.p3 = (self.x + 37, self.y + 35)
         self.p4 = (self.x + 22, self.y + 40)
         self.p5 = (self.x - 22, self.y + 40)
-        pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
-        pygame.draw.circle(screen, self.color, self.p4, 10, 0)
-        pygame.draw.circle(screen, self.color, self.p5, 10, 0)
+
+        self.resolved = False
+
+    def resolve(self):
+        self.myVec = VectorForce(self.pos, 50, 90, False)
+        self.myVec.myArrow.color = green
+        self.myVec.value = '?'
+        self.resolved = True
+
+    def display(self):
+        if not self.resolved:
+            pygame.draw.polygon(screen, self.color, (self.p1, self.p2, self.p3), 0)
+            pygame.draw.circle(screen, self.color, self.p4, 10, 0)
+            pygame.draw.circle(screen, self.color, self.p5, 10, 0)
+        else:
+            self.myVec.display()
 
 
 # A vector force defined by value and angle from horz X axis
@@ -246,7 +277,7 @@ class VectorForce:
         self.y2 = self.y + (self.value * math.sin(self.theta))
         self.myArrow = Arrow(self.color, self.value, self.theta, self.pos, (self.x2, self.y2))
         self.displayLabel = label
-        self.id=0
+        self.id = 0
 
     def display(self):
         self.myArrow.display()
@@ -258,6 +289,7 @@ class VectorForce:
 class memberForce:
     def __init__(self, pos, unit, flip, id):
         (self.u1, self.u2) = unit
+        self.type = 'member'
         if self.u1 == 0:
             if self.u2 > 0:
                 self.theta = 90
@@ -269,7 +301,7 @@ class memberForce:
                 self.theta = self.theta - 180
             else:
                 self.theta = self.theta
-        self.id=id
+        self.id = id
         self.myVec = VectorForce(pos, 50, self.theta, False)
         self.myVec.myArrow.color = green
         self.myVec.value = '?'
@@ -346,7 +378,7 @@ count = 0
 done = False
 mode = 0
 
-forceCount=0
+forceCount = 0
 
 while not done:
     # Main Program:
