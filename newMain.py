@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 import pygame
 
 white = (255, 255, 255)
@@ -124,27 +124,27 @@ class Structure:
             node1.forceList.append(memberForce(node1.pos, unit1, True, forceCount))
             node2.forceList.append(memberForce(node2.pos, unit2, False, forceCount))
             forceCount += 1
-            for n in m.nodeList:
-                print("Number of Forces: " + str(len(n.forceList)))
-                #     for f in n.forceList:
-                #         if f.__class__.__name__ == 'Pin':
-                #             print("Pin support in this node")
-                #         elif f.__class__.__name__ == 'Roller':
-                #             print("Rolelr support in this node")
-                #         else:
-                #             print("No Pin or Roller")
-                # print('Unit 1:' + str(unit1))
-                # print('Unit 2:' + str(unit2))
+            # for n in m.nodeList:
+            #     #print("Number of Forces: " + str(len(n.forceList)))
+            #     #     for f in n.forceList:
+            #     #         if f.__class__.__name__ == 'Pin':
+            #     #             print("Pin support in this node")
+            #     #         elif f.__class__.__name__ == 'Roller':
+            #     #             print("Rolelr support in this node")
+            #     #         else:
+            #     #             print("No Pin or Roller")
+            #     # print('Unit 1:' + str(unit1))
+            #     # print('Unit 2:' + str(unit2))
             for n in self.structNodes:
                 for f in n.forceList:
                     if f.__class__.__name__ == 'Pin':
-                        #print("Pin support in this node")
+                        # print("Pin support in this node")
                         f.resolve()
                     elif f.__class__.__name__ == 'Roller':
                         f.resolve()
-                        #print("Rolelr support in this node")
-                    #else:
-                        #print("No Pin or Roller")
+                        # print("Rolelr support in this node")
+                        # else:
+                        # print("No Pin or Roller")
 
 
 class Member:
@@ -196,6 +196,10 @@ class Node:
         (self.x, self.y) = pos
         self.color = grey
         self.forceList = []
+
+        # These two lists will eventually become the rows in the systyem matrix
+        self.xList = []
+        self.yList = []
         # self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type, id):
@@ -228,19 +232,21 @@ class Pin:
         self.color = red
         self.id = 0
 
-        #Dispaly Constants
+        # Dispaly Constants
         self.p1 = self.pos
         self.p2 = (self.x - 37, self.y + 50)
         self.p3 = (self.x + 37, self.y + 50)
 
-        self.resolved= False
+        self.resolved = False
+        self.value = "?"
 
     def resolve(self):
-        self.myVec1 = VectorForce(self.pos, 50, 90, False)
+        self.theta = list([90, 180])
+        self.myVec1 = VectorForce(self.pos, 50, self.theta[0], False)
         self.myVec1.myArrow.color = green
         self.myVec1.value = '?'
 
-        self.myVec2 = VectorForce(self.pos, 50, 180, False)
+        self.myVec2 = VectorForce(self.pos, 50, self.theta[1], False)
         self.myVec2.myArrow.color = green
         self.myVec2.value = '?'
 
@@ -261,6 +267,7 @@ class Roller:
         (self.x, self.y) = self.pos
         self.color = red
         self.id = 0
+        self.value = "?"
         # Display Cosntants
         self.p1 = self.pos
         self.p2 = (self.x - 37, self.y + 35)
@@ -269,9 +276,10 @@ class Roller:
         self.p5 = (self.x - 22, self.y + 40)
 
         self.resolved = False
+        self.theta = 90
 
     def resolve(self):
-        self.myVec = VectorForce(self.pos, 50, 90, False)
+        self.myVec = VectorForce(self.pos, 50, self.theta, False)
         self.myVec.myArrow.color = green
         self.myVec.value = '?'
         self.resolved = True
@@ -324,7 +332,8 @@ class memberForce:
         self.id = id
         self.myVec = VectorForce(pos, 50, self.theta, False)
         self.myVec.myArrow.color = green
-        self.myVec.value = '?'
+        self.value = '?'
+        self.myVec.value = self.value
 
     def display(self):
         self.myVec.display()
@@ -385,6 +394,51 @@ def getUnit(pos1, pos2):
     return unit  # unit is a tuple, unit vec
 
 
+def solveSys(struct):
+    global forceCount
+    print("Force Count: " + str(forceCount))
+    # TO DO:
+    # Check if structure is statically determinate!!!!!!!!!
+    # Step 1:
+    # Must form a  matrix of the form:
+    #         Force1 Force2 Force3 Reaction1 Reaction2 Reaction3 External...
+    # Node1(x)
+    # Node1(y)
+    # Node2(x)
+    # Node2(y)
+    #     .
+    #     .
+    #     .
+    for n in struct.structNodes:
+        #This section pads each array with zeros
+        for i in range(0,forceCount):
+            n.xList.append(0)
+            n.yList.append(0)
+        #print(n.xList)
+        for f in n.forceList:
+            tempName=str(f.__class__.__name__)
+            print("Force Type:" + tempName)
+            print("Force ID: " + str(f.id))
+            print("Value:" + str(f.value))
+            print("Angle:" + str(f.theta))
+            print("\n")
+            if f.value == '?':
+                tempValue = 1
+            else:
+                tempValue = f.value
+            if f.theta.__class__.__name__=="list":
+                tempT1= math.radians(f.theta[0])
+                tempT2 =  math.radians(f.theta[1])
+                n.xList[f.id - 1] = tempValue * math.cos(tempT1)
+                n.yList[f.id - 1] = tempValue * math.sin(tempT2)
+            else:
+                tempTheta = math.radians(f.theta)
+                n.xList[f.id-1] = tempValue * math.cos(tempTheta)
+                n.yList[f.id-1] = tempValue * math.sin(tempTheta)
+        print("--")
+        print(n.xList)
+        print(n.yList)
+
 # Pygame Stuff
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
@@ -432,6 +486,7 @@ while not done:
                 mainStruct.testingScenario()
             elif event.key == pygame.K_s:
                 mainStruct.get()
+                solveSys(mainStruct)
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
