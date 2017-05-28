@@ -13,6 +13,7 @@ black = (0, 0, 0)
 class Structure:
     def __init__(self):
         self.membList = []
+        self.array= np.array([])
         self.structNodes = []  # running list of all the nodes of the struct
         self.memberAdded = False
         self.display()
@@ -144,7 +145,8 @@ class Structure:
                         f.resolve()
                         # print("Rolelr support in this node")
                         # else:
-                        # print("No Pin or Roller")
+                        # print("No Pin or Roller")\
+
 
 
 class Member:
@@ -200,6 +202,8 @@ class Node:
         # These two lists will eventually become the rows in the systyem matrix
         self.xList = []
         self.yList = []
+        #Arrays
+        self.array=np.array([])
         # self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type, id):
@@ -409,6 +413,9 @@ def solveSys(struct):
     #     .
     #     .
     #     .
+    #Padding the main Array:
+    for i in range(0,forceCount):
+         struct.array=np.append(struct.array,0)
     for n in struct.structNodes:
         #This section pads each array with zeros
         for i in range(0,forceCount):
@@ -421,7 +428,7 @@ def solveSys(struct):
             print("Force ID: " + str(f.id))
             print("Value:" + str(f.value))
             print("Angle:" + str(f.theta))
-            print("\n")
+            #print("\n")
             if f.value == '?':
                 tempValue = 1
             else:
@@ -435,9 +442,20 @@ def solveSys(struct):
                 tempTheta = math.radians(f.theta)
                 n.xList[f.id-1] = tempValue * math.cos(tempTheta)
                 n.yList[f.id-1] = tempValue * math.sin(tempTheta)
-        print("--")
-        print(n.xList)
-        print(n.yList)
+        #print("Lists:")
+        if len(n.xList)==0 or len(n.yList)==0:
+            print("what happened?????????????")
+        else:
+            #print(n.xList)
+            #print(n.yList)
+            n.array = np.vstack((np.asarray(n.xList), np.asarray(n.yList)))
+            #print(n.array)
+            struct.array=np.vstack((struct.array,n.array))
+            #print(struct.array)
+        print("----")
+    struct.array = np.delete(struct.array, (0), axis=0) #This deletes the intial row I created up above
+    #print(struct.array)
+    #print(struct.array.shape)
 
 # Pygame Stuff
 pygame.init()
