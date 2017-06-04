@@ -13,7 +13,7 @@ black = (0, 0, 0)
 class Structure:
     def __init__(self):
         self.membList = []
-        self.array= np.array([])
+        self.array = np.array([])
         self.structNodes = []  # running list of all the nodes of the struct
         self.memberAdded = False
         self.display()
@@ -102,6 +102,7 @@ class Structure:
         # for n in self.structNodes:
         #     print(n)
         print("Number of Members: " + str(len(self.membList)))
+        print("")
 
     def display(self):
         # self.structNodes = []  # running list of all the nodes of the struct
@@ -122,8 +123,8 @@ class Structure:
             unit1 = getUnit(node1.pos, node2.pos)
             (self.temp1, self.temp2) = unit1
             unit2 = (-self.temp1, -self.temp2)
-            node1.forceList.append(memberForce(node1.pos, unit1, True, forceCount))
-            node2.forceList.append(memberForce(node2.pos, unit2, False, forceCount))
+            node1.forceList.append(memberForce(node1.pos, unit1, True, forceCount+1))
+            node2.forceList.append(memberForce(node2.pos, unit2, False, forceCount+1))
             forceCount += 1
             # for n in m.nodeList:
             #     #print("Number of Forces: " + str(len(n.forceList)))
@@ -146,7 +147,6 @@ class Structure:
                         # print("Rolelr support in this node")
                         # else:
                         # print("No Pin or Roller")\
-
 
 
 class Member:
@@ -202,8 +202,8 @@ class Node:
         # These two lists will eventually become the rows in the systyem matrix
         self.xList = []
         self.yList = []
-        #Arrays
-        self.array=np.array([])
+        # Arrays
+        self.array = np.array([])
         # self.label=myFont.render(str(self.pos),1, red)
 
     def addForce(self, pos, type, id):
@@ -321,6 +321,7 @@ class VectorForce:
 class memberForce:
     def __init__(self, pos, unit, flip, id):
         (self.u1, self.u2) = unit
+        self.pos=pos
         self.type = 'member'
         if self.u1 == 0:
             if self.u2 > 0:
@@ -400,6 +401,7 @@ def getUnit(pos1, pos2):
 
 def solveSys(struct):
     global forceCount
+    global forceList
     print("Force Count: " + str(forceCount))
     # TO DO:
     # Check if structure is statically determinate!!!!!!!!!
@@ -413,49 +415,80 @@ def solveSys(struct):
     #     .
     #     .
     #     .
-    #Padding the main Array:
-    for i in range(0,forceCount):
-         struct.array=np.append(struct.array,0)
+    for i in range(0, forceCount):  # Padding the main Array. This row of zeros will be deleted down below
+        struct.array = np.append(struct.array, 0)
     for n in struct.structNodes:
-        #This section pads each array with zeros
-        for i in range(0,forceCount):
+        # This section pads each array with zeros
+        for i in range(0, forceCount):
             n.xList.append(0)
             n.yList.append(0)
-        #print(n.xList)
+        # print(n.xList)
         for f in n.forceList:
-            tempName=str(f.__class__.__name__)
-            print("Force Type:" + tempName)
-            print("Force ID: " + str(f.id))
-            print("Value:" + str(f.value))
-            print("Angle:" + str(f.theta))
-            #print("\n")
+            tempName = str(f.__class__.__name__)
+            forceList=forceList+[f]
+            # print("Force Type:" + tempName)
+            # print("Force ID: " + str(f.id))
+            # print("Value:" + str(f.value))
+            # print("Angle:" + str(f.theta))
+            # print("\n")
             if f.value == '?':
                 tempValue = 1
             else:
-                tempValue = f.value
-            if f.theta.__class__.__name__=="list":
-                tempT1= math.radians(f.theta[0])
-                tempT2 =  math.radians(f.theta[1])
+                tempValue= 1
+                #tempValue = f.value
+            if f.theta.__class__.__name__ == "list": #If has two vectors assc. with it
+                tempT1 = math.radians(f.theta[0])
+                tempT2 = math.radians(f.theta[1])
                 n.xList[f.id - 1] = tempValue * math.cos(tempT1)
                 n.yList[f.id - 1] = tempValue * math.sin(tempT2)
             else:
                 tempTheta = math.radians(f.theta)
-                n.xList[f.id-1] = tempValue * math.cos(tempTheta)
-                n.yList[f.id-1] = tempValue * math.sin(tempTheta)
-        #print("Lists:")
-        if len(n.xList)==0 or len(n.yList)==0:
+                n.xList[f.id - 1] = tempValue * math.cos(tempTheta)
+                n.yList[f.id - 1] = tempValue * math.sin(tempTheta)
+        # print("Lists:")
+        if len(n.xList) == 0 or len(n.yList) == 0:
             print("what happened?????????????")
         else:
-            #print(n.xList)
-            #print(n.yList)
+            # print(n.xList)
+            # print(n.yList)
             n.array = np.vstack((np.asarray(n.xList), np.asarray(n.yList)))
-            #print(n.array)
-            struct.array=np.vstack((struct.array,n.array))
-            #print(struct.array)
+            # print(n.array)
+            struct.array = np.vstack((struct.array, n.array))
+            #print(struct.array.shape)
         print("----")
-    struct.array = np.delete(struct.array, (0), axis=0) #This deletes the intial row I created up above
-    #print(struct.array)
-    #print(struct.array.shape)
+    struct.array = np.delete(struct.array, (0), axis=0)  # This deletes the intial row I created up above
+    print(struct.array)
+    print(struct.array.shape)
+
+
+    ## Now will try to generate the right hand side of the eqn:
+    print("This is len of forceList: " + str(len(forceList)))
+    rightSideArray=np.array([0])
+    for i in range(1,forceCount):
+        rightSideArray=np.vstack((rightSideArray,np.asarray(0)))
+    print(rightSideArray)
+    i=0
+    for n in struct.structNodes:
+        for f in n.forceList:
+            i+=1
+    print(len(set(forceList)))
+
+def cleanForceList():
+    global forceList
+    global forceDict
+    for f in forceList:
+        # print("---------------------------")
+        # print("Force Number: " + str(forceList.index(f)))
+        # print("Force Class: " + str(f.__class__.__name__))
+        # print("Force ID: " + str(f.id))
+        # print("Force Pos: " + str(f.pos))
+        if f.id in forceDict:
+            temp=forceDict[f.id]
+            forceDict[f.id]=[f,temp]
+        else:
+            forceDict[f.id]=f
+    print(forceDict)
+
 
 # Pygame Stuff
 pygame.init()
@@ -470,6 +503,8 @@ count = 0
 done = False
 mode = 0
 
+forceList= []
+forceDict={}
 forceCount = 0
 
 while not done:
@@ -505,6 +540,8 @@ while not done:
             elif event.key == pygame.K_s:
                 mainStruct.get()
                 solveSys(mainStruct)
+            elif event.key== pygame.K_d:
+                cleanForceList()
             print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
