@@ -8,6 +8,11 @@ red = (244, 67, 54)
 green = (10, 151, 41)
 black = (0, 0, 0)
 
+#Class Definitions 7/1/17
+#Each Node has coordinates and ID
+#Member has ID, toNode and fromNode and then dx,dy, and length,
+#Reactions have id,node,and direction
+#External forces have force mag, direction, and node
 
 # A Structure has a list of Members, and a member has a list of nodes
 class Structure:
@@ -166,8 +171,16 @@ class Member:
             if self.var.__class__.__name__ == 'list':
                 self.var = self.var[0]  # To take care of duplicaes
             self.nodeList.append(self.var)
+            if isStartNode:
+                self.startNode=self.var
+            else:
+                self.endNode = self.var
         else:
             self.nodeList.append(Node(pos, isStartNode))  # Create new Node
+            if isStartNode:
+                self.startNode=self.nodeList[len(self.nodeList)-1]
+            else:
+                self.endNode = self.nodeList[len(self.nodeList) - 1]
 
     def endMember(self, pos):
         if len(self.nodeList) < 2:  # Each member only has two nodes
@@ -460,20 +473,20 @@ def solveSys(struct):
     print(struct.array)
     print(struct.array.shape)
 
-
+    populateForceDict()
     ## Now will try to generate the right hand side of the eqn:
-    print("This is len of forceList: " + str(len(forceList)))
+    #print("This is len of forceList: " + str(len(forceList)))
     rightSideArray=np.array([0])
     for i in range(1,forceCount):
-        rightSideArray=np.vstack((rightSideArray,np.asarray(0)))
+        if forceDict[i].__class__.__name__=='VectorForce':
+            rightSideArray = np.vstack((rightSideArray, np.asarray(forceDict[i].value)))
+        else:
+            rightSideArray=np.vstack((rightSideArray,np.asarray(0)))
     print(rightSideArray)
-    i=0
-    for n in struct.structNodes:
-        for f in n.forceList:
-            i+=1
-    print(len(set(forceList)))
+    print(forceCount)
+    print(np.divide(struct.array,rightSideArray))
 
-def cleanForceList():
+def populateForceDict():
     global forceList
     global forceDict
     for f in forceList:
@@ -482,7 +495,7 @@ def cleanForceList():
         # print("Force Class: " + str(f.__class__.__name__))
         # print("Force ID: " + str(f.id))
         # print("Force Pos: " + str(f.pos))
-        if f.id in forceDict:
+        if f.id in forceDict:#If forceID is alreayd in dicitonary, add a list in it's place
             temp=forceDict[f.id]
             forceDict[f.id]=[f,temp]
         else:
@@ -540,9 +553,9 @@ while not done:
             elif event.key == pygame.K_s:
                 mainStruct.get()
                 solveSys(mainStruct)
-            elif event.key== pygame.K_d:
-                cleanForceList()
-            print("Game Mode:" + str(mode))
+            # elif event.key== pygame.K_d:
+            #     populateForceDict()
+            #print("Game Mode:" + str(mode))
 
     # Display, Flip, Tick
     screen.fill((0, 0, 0))  # black
