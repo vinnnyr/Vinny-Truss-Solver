@@ -109,6 +109,7 @@ class Structure:
         for n in self.structNodes:
             print(n.id)
         print("Number of Members: " + str(len(self.membList)))
+
         print("")
 
     def display(self):
@@ -117,6 +118,10 @@ class Structure:
         for n in self.structNodes:
             i = i + 1
             n.id = i
+        i = 0  # assigning Node IDS
+        for m in self.membList:
+            i = i + 1
+            m.id = i
         if self.memberAdded:
             self.structNodes = self.structNodes + self.membList[len(self.membList) - 1].nodeList
             self.memberAdded = False
@@ -427,7 +432,29 @@ def getUnit(pos1, pos2):
 
 
 def solveSys(struct):
-    pass
+    ## Populate Element Data
+    numberOfNodes=len(mainStruct.structNodes)
+    M=np.zeros((2*numberOfNodes,2*numberOfNodes))
+    # Matlab:
+    # M(2*nodeFrom-1,element)= dx/length;
+    # M(2*nodeTo-1,element)= -dx/length;
+    # M(2*nodeFrom,element)= dy/length;
+    # M(2*nodeTo,element)= -dy/length;
+    for m in mainStruct.membList:
+        nodeFrom=m.startNode.id
+        nodeTo=m.endNode.id
+        print("node from" + str(nodeFrom))
+        print("node to" + str(nodeTo))
+        print("memb id" + str(m.id))
+        np.put(M,((2*nodeFrom-2)*(m.id-1)),m.dx/m.length)
+        np.put(M, ((2 * nodeTo - 2)* (m.id - 1)), -m.dx / m.length)
+        np.put(M, ((2 * nodeFrom - 1)* (m.id - 1)), m.dy / m.length)
+        np.put(M, ((2 * nodeTo - 1)* (m.id - 1)), - m.dy / m.length)
+        print(M)
+    print(M)
+
+
+
 
 
 def populateForceDict():
