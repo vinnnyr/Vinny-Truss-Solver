@@ -21,6 +21,7 @@ class Structure:
         self.membList = []
         self.array = np.array([])
         self.structNodes = []  # running list of all the nodes of the struct
+        self.forceList= []
         self.memberAdded = False
         self.display()
         # self.testingScenario()
@@ -155,6 +156,7 @@ class Structure:
             #     # print('Unit 2:' + str(unit2))
             for n in self.structNodes:
                 for f in n.forceList:
+                    self.forceList.append(f)
                     if f.__class__.__name__ == 'Pin':
                         # print("Pin support in this node")
                         f.resolve()
@@ -163,6 +165,7 @@ class Structure:
                         # print("Rolelr support in this node")
                         # else:
                         # print("No Pin or Roller")\
+            self.forceList = list(set(self.forceList)) # Removes duplicates
 
 
 class Member:
@@ -446,12 +449,38 @@ def solveSys(struct):
         print("node from" + str(nodeFrom))
         print("node to" + str(nodeTo))
         print("memb id" + str(m.id))
-        np.put(M,((2*nodeFrom-2)*(m.id-1)),m.dx/m.length)
-        np.put(M, ((2 * nodeTo - 2)* (m.id - 1)), -m.dx / m.length)
-        np.put(M, ((2 * nodeFrom - 1)* (m.id - 1)), m.dy / m.length)
-        np.put(M, ((2 * nodeTo - 1)* (m.id - 1)), - m.dy / m.length)
-        print(M)
+        # np.put(M,((2*nodeFrom-2)*(m.id-1)),m.dx/m.length)
+        # np.put(M, ((2 * nodeTo - 2)* (m.id - 1)), -m.dx / m.length)
+        # np.put(M, ((2 * nodeFrom - 1)* (m.id - 1)), m.dy / m.length)
+        # np.put(M, ((2 * nodeTo - 1)* (m.id - 1)), - m.dy / m.length)
+        M[(2*nodeFrom-2),(m.id-1)]=m.dx/m.length
+        M[(2 * nodeTo - 2),(m.id - 1)]=-m.dx/m.length
+        M[(2 * nodeFrom - 1), (m.id - 1)] = m.dy / m.length
+        M[(2 * nodeTo - 1), (m.id - 1)] = -m.dy / m.length
+        #print(M)
     print(M)
+    print(len(mainStruct.forceList))
+    fID=0
+    for f in mainStruct.forceList:
+        #Note... Roller and Pin IDS may not always be in the first 3... possible mode of failure
+        # if ((direction == 'y') | (direction == 'Y'))
+        #     M(2 * node, numberElements + reaction) = M(2 * node, numberElements + reaction) + 1;
+        # elseif((direction == 'X') | (direction == 'x'))
+        # M(2 * node - 1, numberElements + reaction) = M(2 * node - 1, numberElements + reaction) + 1;
+        if f.__class__.__name__=='Roller': #Y
+            fID=fID+1
+            np.put(M, ((2 * nodeFrom - 1) * (len(mainStruct.membList))+f.id-1), 1) #Possible mode of failure...1
+            #f.id=fID
+            #print("Roller ID:" + str(f.id))
+        elif f.__class__.__name__=='Pin': # X and Y
+            fID=fID+1
+            np.put(M, ((2 * nodeFrom - 2) * (len(mainStruct.membList)) + f.id - 1), 1) #Possible mode of failure...1
+            #f.id=fID+1
+            #print("Pin Id:" + str(f.id))
+        else:
+            pass
+    np.savetxt('npLog.csv',M,delimiter=",")
+
 
 
 
