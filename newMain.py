@@ -244,11 +244,11 @@ class Node:
     def addForce(self, pos, type, id):
         # print(type)
         if type == 'pin':
-            self.forceList.append(Pin(pos))
+            self.forceList.append(Pin(pos,self))
         elif type == 'roller':
-            self.forceList.append(Roller(pos))
+            self.forceList.append(Roller(pos,self))
         elif type == 'vec':
-            self.forceList.append(VectorForce(pos, 50, 0, True))
+            self.forceList.append(VectorForce(pos, 50, 0, True,self))
         obj = self.forceList[(len(self.forceList) - 1)]
         obj.id = id
 
@@ -265,7 +265,8 @@ class Node:
 
 # Can support x and y forces
 class Pin:
-    def __init__(self, pos):
+    def __init__(self, pos,node):
+        self.node=node
         self.pos = pos
         (self.x, self.y) = self.pos
         self.color = red
@@ -281,11 +282,11 @@ class Pin:
 
     def resolve(self):
         self.theta = list([90, 180])
-        self.myVec1 = VectorForce(self.pos, 50, self.theta[0], False) #y
+        self.myVec1 = VectorForce(self.pos, 50, self.theta[0], False, "null") #y
         self.myVec1.myArrow.color = green
         self.myVec1.value = '?'
 
-        self.myVec2 = VectorForce(self.pos, 50, self.theta[1], False) #x
+        self.myVec2 = VectorForce(self.pos, 50, self.theta[1], False, "null") #x
         self.myVec2.myArrow.color = green
         self.myVec2.value = '?'
 
@@ -301,7 +302,8 @@ class Pin:
 
 # Can only support one force in a certain direction (typically straight up)
 class Roller:
-    def __init__(self, pos):
+    def __init__(self, pos,node):
+        self.node = node
         self.pos = pos
         (self.x, self.y) = self.pos
         self.color = red
@@ -318,7 +320,7 @@ class Roller:
         self.theta = 90
 
     def resolve(self):
-        self.myVec = VectorForce(self.pos, 50, self.theta, False)#y
+        self.myVec = VectorForce(self.pos, 50, self.theta, False, "null")#y
         self.myVec.myArrow.color = green
         self.myVec.value = '?'
         self.resolved = True
@@ -334,7 +336,8 @@ class Roller:
 
 # A vector force defined by value and angle from horz X axis
 class VectorForce:
-    def __init__(self, pos, value, angle, label):
+    def __init__(self, pos, value, angle, label,node):
+        self.node = node
         self.pos = pos
         self.value = value
         self.theta = -math.radians(angle)
@@ -370,7 +373,7 @@ class memberForce:
             else:
                 self.theta = self.theta
         self.id = id
-        self.myVec = VectorForce(pos, 50, self.theta, False)
+        self.myVec = VectorForce(pos, 50, self.theta, False, "null")
         self.myVec.myArrow.color = green
         self.value = '?'
         self.myVec.value = self.value
@@ -449,10 +452,6 @@ def solveSys(struct):
         print("node from" + str(nodeFrom))
         print("node to" + str(nodeTo))
         print("memb id" + str(m.id))
-        # np.put(M,((2*nodeFrom-2)*(m.id-1)),m.dx/m.length)
-        # np.put(M, ((2 * nodeTo - 2)* (m.id - 1)), -m.dx / m.length)
-        # np.put(M, ((2 * nodeFrom - 1)* (m.id - 1)), m.dy / m.length)
-        # np.put(M, ((2 * nodeTo - 1)* (m.id - 1)), - m.dy / m.length)
         M[(2*nodeFrom-2),(m.id-1)]=m.dx/m.length
         M[(2 * nodeTo - 2),(m.id - 1)]=-m.dx/m.length
         M[(2 * nodeFrom - 1), (m.id - 1)] = m.dy / m.length
@@ -468,26 +467,23 @@ def solveSys(struct):
         # elseif((direction == 'X') | (direction == 'x'))
         # M(2 * node - 1, numberElements + reaction) = M(2 * node - 1, numberElements + reaction) + 1;
         if f.__class__.__name__=='Roller': #Y
+            #print(f.node)
             fID=fID+1
-            np.put(M, ((2 * nodeFrom - 1) * (len(mainStruct.membList))+f.id-1), 1) #Possible mode of failure...1
+            #np.put(M, ((2 * nodeFrom - 1) * (len(mainStruct.membList))+f.id-1), 1) #Possible mode of failure...1
+            M[2*f.node.id-1,len(mainStruct.membList)+f.id-1]=1 #Y
             #f.id=fID
             #print("Roller ID:" + str(f.id))
         elif f.__class__.__name__=='Pin': # X and Y
             fID=fID+1
-            np.put(M, ((2 * nodeFrom - 2) * (len(mainStruct.membList)) + f.id - 1), 1) #Possible mode of failure...1
+            M[2 * f.node.id - 2, len(mainStruct.membList) + f.id - 1] = 1 #X #Possible mode of failure...1
+            M[2 * f.node.id - 1, len(mainStruct.membList) + f.id - 1] = 1#Y
             #f.id=fID+1
             #print("Pin Id:" + str(f.id))
         else:
             pass
     np.savetxt('npLog.csv',M,delimiter=",")
+    external=np.zeros((2*numberOfNodes,1))
 
-
-
-
-
-
-def populateForceDict():
-    pass
 
 
 # Pygame Stuff
