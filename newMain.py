@@ -10,7 +10,7 @@ black = (0, 0, 0)
 
 #Class Definitions 7/1/17
 #Each Node has coordinates and ID
-#Member has ID, toNode and fromNode and then dx,dy, and length,
+#Member has ID, toNode (endNode) and fromNode (startNode) and then dx,dy, and length,
 #Reactions have id,node,and direction
 #External forces have force mag, direction, and node
 
@@ -46,7 +46,7 @@ class Structure:
         else:  # No membList population, start one.
             self.addMemb((mouseX, mouseY))
 
-    def createForce(self, pos, type):
+    def createForce(self, pos, type): #This is where Force IDs are created
         global forceCount
         var = checkCollide(self.structNodes, pos, 50)
         if var:
@@ -187,6 +187,14 @@ class Member:
             # print(len(self.nodeList))
             self.addNode(self.endPos, False)
         (self.x, self.y) = self.endPos
+        self.calc()
+
+    def calc(self):
+        (x1,y1)=self.startNode.pos
+        (x2,y2)=self.endNode.pos
+        self.dx=x2-x1
+        self.dy=y2-y1
+        self.length=math.sqrt(self.dx**2 + self.dy**2)
 
     def display(self):
         if self.moving:
@@ -413,95 +421,82 @@ def getUnit(pos1, pos2):
 
 
 def solveSys(struct):
-    global forceCount
-    global forceList
-    print("Force Count: " + str(forceCount))
-    # TO DO:
-    # Check if structure is statically determinate!!!!!!!!!
-    # Step 1:
-    # Must form a  matrix of the form:
-    #         Force1 Force2 Force3 Reaction1 Reaction2 Reaction3 External...
-    # Node1(x)
-    # Node1(y)
-    # Node2(x)
-    # Node2(y)
-    #     .
-    #     .
-    #     .
-    for i in range(0, forceCount):  # Padding the main Array. This row of zeros will be deleted down below
-        struct.array = np.append(struct.array, 0)
-    for n in struct.structNodes:
-        # This section pads each array with zeros
-        for i in range(0, forceCount):
-            n.xList.append(0)
-            n.yList.append(0)
-        # print(n.xList)
-        for f in n.forceList:
-            tempName = str(f.__class__.__name__)
-            forceList=forceList+[f]
-            # print("Force Type:" + tempName)
-            # print("Force ID: " + str(f.id))
-            # print("Value:" + str(f.value))
-            # print("Angle:" + str(f.theta))
-            # print("\n")
-            if f.value == '?':
-                tempValue = 1
-            else:
-                tempValue= 1
-                #tempValue = f.value
-            if f.theta.__class__.__name__ == "list": #If has two vectors assc. with it
-                tempT1 = math.radians(f.theta[0])
-                tempT2 = math.radians(f.theta[1])
-                n.xList[f.id - 1] = tempValue * math.cos(tempT1)
-                n.yList[f.id - 1] = tempValue * math.sin(tempT2)
-            else:
-                tempTheta = math.radians(f.theta)
-                n.xList[f.id - 1] = tempValue * math.cos(tempTheta)
-                n.yList[f.id - 1] = tempValue * math.sin(tempTheta)
-        # print("Lists:")
-        if len(n.xList) == 0 or len(n.yList) == 0:
-            print("what happened?????????????")
-        else:
-            # print(n.xList)
-            # print(n.yList)
-            n.array = np.vstack((np.asarray(n.xList), np.asarray(n.yList)))
-            # print(n.array)
-            struct.array = np.vstack((struct.array, n.array))
-            #print(struct.array.shape)
-        print("----")
-    struct.array = np.delete(struct.array, (0), axis=0)  # This deletes the intial row I created up above
-    print(struct.array)
-    print(struct.array.shape)
-
-    populateForceDict()
-    ## Now will try to generate the right hand side of the eqn:
-    #print("This is len of forceList: " + str(len(forceList)))
-    rightSideArray=np.array([0])
-    for i in range(1,forceCount):
-        if forceDict[i].__class__.__name__=='VectorForce':
-            rightSideArray = np.vstack((rightSideArray, np.asarray(forceDict[i].value)))
-        else:
-            rightSideArray=np.vstack((rightSideArray,np.asarray(0)))
-    print(rightSideArray)
-    print(forceCount)
-    print(np.divide(struct.array,rightSideArray))
+    # global forceCount
+    # global forceList
+    # print("Force Count: " + str(forceCount))
+    # # TO DO:
+    # # Check if structure is statically determinate!!!!!!!!!
+    # # Step 1:
+    # # Must form a  matrix of the form:
+    # #         Force1 Force2 Force3 Reaction1 Reaction2 Reaction3 External...
+    # # Node1(x)
+    # # Node1(y)
+    # # Node2(x)
+    # # Node2(y)
+    # #     .
+    # #     .
+    # #     .
+    # for i in range(0, forceCount):  # Padding the main Array. This row of zeros will be deleted down below
+    #     struct.array = np.append(struct.array, 0)
+    # for n in struct.structNodes:
+    #     # This section pads each array with zeros
+    #     for i in range(0, forceCount):
+    #         n.xList.append(0)
+    #         n.yList.append(0)
+    #     # print(n.xList)
+    #     for f in n.forceList:
+    #         tempName = str(f.__class__.__name__)
+    #         forceList=forceList+[f]
+    #         # print("Force Type:" + tempName)
+    #         # print("Force ID: " + str(f.id))
+    #         # print("Value:" + str(f.value))
+    #         # print("Angle:" + str(f.theta))
+    #         # print("\n")
+    #         if f.value == '?':
+    #             tempValue = 1
+    #         else:
+    #             tempValue= 1
+    #             #tempValue = f.value
+    #         if f.theta.__class__.__name__ == "list": #If has two vectors assc. with it
+    #             tempT1 = math.radians(f.theta[0])
+    #             tempT2 = math.radians(f.theta[1])
+    #             n.xList[f.id - 1] = tempValue * math.cos(tempT1)
+    #             n.yList[f.id - 1] = tempValue * math.sin(tempT2)
+    #         else:
+    #             tempTheta = math.radians(f.theta)
+    #             n.xList[f.id - 1] = tempValue * math.cos(tempTheta)
+    #             n.yList[f.id - 1] = tempValue * math.sin(tempTheta)
+    #     # print("Lists:")
+    #     if len(n.xList) == 0 or len(n.yList) == 0:
+    #         print("what happened?????????????")
+    #     else:
+    #         # print(n.xList)
+    #         # print(n.yList)
+    #         n.array = np.vstack((np.asarray(n.xList), np.asarray(n.yList)))
+    #         # print(n.array)
+    #         struct.array = np.vstack((struct.array, n.array))
+    #         #print(struct.array.shape)
+    #     print("----")
+    # struct.array = np.delete(struct.array, (0), axis=0)  # This deletes the intial row I created up above
+    # print(struct.array)
+    # print(struct.array.shape)
+    #
+    # populateForceDict()
+    # ## Now will try to generate the right hand side of the eqn:
+    # #print("This is len of forceList: " + str(len(forceList)))
+    # rightSideArray=np.array([0])
+    # for i in range(1,forceCount):
+    #     if forceDict[i].__class__.__name__=='VectorForce':
+    #         rightSideArray = np.vstack((rightSideArray, np.asarray(forceDict[i].value)))
+    #     else:
+    #         rightSideArray=np.vstack((rightSideArray,np.asarray(0)))
+    # print(rightSideArray)
+    # print(forceCount)
+    # print(np.divide(struct.array,rightSideArray))
+    pass
 
 def populateForceDict():
-    global forceList
-    global forceDict
-    for f in forceList:
-        # print("---------------------------")
-        # print("Force Number: " + str(forceList.index(f)))
-        # print("Force Class: " + str(f.__class__.__name__))
-        # print("Force ID: " + str(f.id))
-        # print("Force Pos: " + str(f.pos))
-        if f.id in forceDict:#If forceID is alreayd in dicitonary, add a list in it's place
-            temp=forceDict[f.id]
-            forceDict[f.id]=[f,temp]
-        else:
-            forceDict[f.id]=f
-    print(forceDict)
-
+    pass
 
 # Pygame Stuff
 pygame.init()
