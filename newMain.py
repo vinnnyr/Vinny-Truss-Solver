@@ -471,26 +471,29 @@ def solveSys(struct):
             #print(f.node)
             fID=fID+1
             #np.put(M, ((2 * nodeFrom - 1) * (len(mainStruct.membList))+f.id-1), 1) #Possible mode of failure...1
+            print(len(mainStruct.membList) + f.id - 1)
             M[2*f.node.id-1,len(mainStruct.membList)+f.id-1]=1 #Y
             #f.id=fID
             #print("Roller ID:" + str(f.id))
         elif f.__class__.__name__=='Pin': # X and Y
             fID=fID+1
-            M[2 * f.node.id - 2, len(mainStruct.membList) + f.id - 1] = 1 #X #Possible mode of failure...1
-            M[2 * f.node.id - 1, len(mainStruct.membList) + f.id - 1] = 1#Y
+            print(len(mainStruct.membList) + f.id -1)
+            M[2 * f.node.id - 2, len(mainStruct.membList) + f.id -1 ] = 1 #X #Possible mode of failure...1
+            M[2 * f.node.id - 1, len(mainStruct.membList) + f.id ] = 1#Y
             #f.id=fID+1
             #print("Pin Id:" + str(f.id))
         elif f.__class__.__name__=='VectorForce':
             # print(f.id)
             # print(f.node)
             # print(f.theta)
-            external[2*f.node.id-2]=-f.value*math.cos(f.theta)
-            external[2 * f.node.id - 1] = -f.value * math.sin(f.theta)
+            external[2*f.node.id-2]=-f.value*math.cos(f.theta) #x
+            external[2 * f.node.id - 1] = -f.value * math.sin(f.theta) #y
         else:
             pass
-    #np.savetxt('npLog.csv',M,delimiter=",")
+    np.savetxt('npLog.csv',M,delimiter=",")
     #np.savetxt('npLog2.csv', external, delimiter=",")
-
+    A= np.linalg.solve(M,external)
+    print(A)
 
 
 
