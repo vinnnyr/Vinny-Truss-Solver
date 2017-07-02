@@ -441,6 +441,7 @@ def solveSys(struct):
     ## Populate Element Data
     numberOfNodes=len(mainStruct.structNodes)
     M=np.zeros((2*numberOfNodes,2*numberOfNodes))
+    external = np.zeros((2 * numberOfNodes, 1))
     # Matlab:
     # M(2*nodeFrom-1,element)= dx/length;
     # M(2*nodeTo-1,element)= -dx/length;
@@ -479,10 +480,17 @@ def solveSys(struct):
             M[2 * f.node.id - 1, len(mainStruct.membList) + f.id - 1] = 1#Y
             #f.id=fID+1
             #print("Pin Id:" + str(f.id))
+        elif f.__class__.__name__=='VectorForce':
+            # print(f.id)
+            # print(f.node)
+            # print(f.theta)
+            external[2*f.node.id-2]=-f.value*math.cos(f.theta)
+            external[2 * f.node.id - 1] = -f.value * math.sin(f.theta)
         else:
             pass
-    np.savetxt('npLog.csv',M,delimiter=",")
-    external=np.zeros((2*numberOfNodes,1))
+    #np.savetxt('npLog.csv',M,delimiter=",")
+    #np.savetxt('npLog2.csv', external, delimiter=",")
+
 
 
 

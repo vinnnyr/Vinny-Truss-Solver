@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fc924296-283e-4373-adba-20da6470119b" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/main.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/npLog.csv" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/newMain.py" afterPath="$PROJECT_DIR$/newMain.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,15 +25,15 @@
       <file leaf-file-name="newMain.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/newMain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="287">
-              <caret line="472" column="65" lean-forward="false" selection-start-line="472" selection-start-column="65" selection-end-line="472" selection-end-column="65" />
+            <state relative-caret-position="353">
+              <caret line="493" column="0" lean-forward="true" selection-start-line="493" selection-start-column="0" selection-end-line="493" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <element signature="e#2162#2677#0" expanded="false" />
                 <element signature="e#13749#14769#0" expanded="false" />
                 <element signature="e#14813#15559#0" expanded="false" />
                 <element signature="e#15591#15776#0" expanded="false" />
-                <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+                <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
               </folding>
             </state>
           </provider>
@@ -360,7 +362,8 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12421875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.035460994" sideWeight="0.50625" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21276596" sideWeight="0.49375" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22978723" sideWeight="0.49375" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -374,7 +377,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32907802" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -433,7 +435,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -448,7 +450,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -463,7 +465,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -478,7 +480,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -493,7 +495,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -508,7 +510,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -523,7 +525,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -555,7 +557,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -587,7 +589,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -619,7 +621,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -651,7 +653,7 @@
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
@@ -886,15 +888,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/newMain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="472" column="65" lean-forward="false" selection-start-line="472" selection-start-column="65" selection-end-line="472" selection-end-column="65" />
+        <state relative-caret-position="353">
+          <caret line="493" column="0" lean-forward="true" selection-start-line="493" selection-start-column="0" selection-end-line="493" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
             <element signature="e#2162#2677#0" expanded="false" />
             <element signature="e#13749#14769#0" expanded="false" />
             <element signature="e#14813#15559#0" expanded="false" />
             <element signature="e#15591#15776#0" expanded="false" />
-            <marker date="1499030525000" expanded="true" signature="16135:17801" ph="..." />
+            <marker date="1499031272000" expanded="true" signature="16183:18117" ph="..." />
           </folding>
         </state>
       </provider>
