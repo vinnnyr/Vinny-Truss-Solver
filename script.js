@@ -1,6 +1,9 @@
 var myCanvas = document.getElementById("myCanvas");
 var formArea=document.getElementById("formArea");
 myCanvas.addEventListener("click", clickFunction);
+document.addEventListener('DOMContentLoaded', function() {
+    onLoad();
+}, false);
 
 var ctx = myCanvas.getContext("2d");
 ctx.fillStyle = "#000000";
@@ -40,6 +43,10 @@ function clickFunction(){//This function is called when mouse is clicked in canv
   ctx.beginPath();
   ctx.arc(pos.x,pos.y,20,0,2*Math.PI);
   ctx.fill();
+}
+
+function onLoad(){
+  formArea.innerHTML='How many nodes? <input type="number" id="numb"><br><button onclick="nodeQty()">Submit</button>'
 }
 
 function nodeQty(){
@@ -94,7 +101,12 @@ function elementQty(){
       text+="<br>"
     }
     text+="<button onclick='memberPopulate()'>Submit</button>"
-    formArea.innerHTML=text
+    if(numbMembs>=numbNodes){//numb membs CANNOT be less than numb Nodes
+      formArea.innerHTML=text
+    }
+    else{
+      formArea.innerHTML="<h3>Number of members cannnot be less than number of nodes, please refresh to try again </h3>"
+    }
 }
 
 function memberPopulate(){
@@ -143,7 +155,12 @@ function reactionQty(){
       text+="<br>"
     }
     text+="<button onclick='assignReactions()'>Submit</button>"
+  if(numbNodes*2==numbReacts+numbMembs){
     formArea.innerHTML=text;
+  }
+  else{
+    formArea.innerHTML="<h3>Error:Statically indeterminate. Please try again by refreshing the page </h3>"
+  }
 }
 function assignReactions(){
   //console.log(M)
@@ -204,30 +221,32 @@ function assignExtForces(){
   //console.log(E)
   var Mi=numeric.inv(M)
   A=numeric.dot(Mi,E)
-  Mtable=document.getElementById('M');
-  Mtable.innerHTML=makeTableHTML(M)
+  //Mtable=document.getElementById('M');
+  //Mtable.innerHTML=makeTableHTML(M)
 
-  text="<table border=1>"
-  for(i=1;i<=numbNodes;i++){
+  text="<h2>Results</h2><table><tr> <th>Type </th><th>Value</th></tr> "
+  for(i=1;i<=2*numbNodes;i++){
     text+="<tr>"
-    text+="<th>"
+    text+="<td>"
     if(i<=numbMembs){
       text+="Member "+i
     }
     else{
-      text+= "Reaction " +i- numbMembs
+      text+= "Reaction " + String(Number(i)- Number(numbMembs))
     }
+    text+="</td>"
+    //console.log(String(A[i-1]))
+    text+="<td>"+String(A[i-1])+"</td>"
+    text+="</tr>"
   }
-  text+="</th>"
-  text+="<th>"+A[i-1]+"</th>"
-  text+="</tr>"
   text+="</table>"
 
   Atable=document.getElementById('A');
+  formArea.innerHTML=""
   Atable.innerHTML=text
 }
 function makeTableHTML(myArray) {
-    var result = "<table border=1>";
+    var result = "<table>";
     for(var i=0; i<myArray.length; i++) {
         result += "<tr>";
         for(var j=0; j<myArray[i].length; j++){
