@@ -1,12 +1,9 @@
-var myCanvas = document.getElementById("myCanvas");
+
 var formArea=document.getElementById("formArea");
-myCanvas.addEventListener("click", clickFunction);
 document.addEventListener('DOMContentLoaded', function() {
     onLoad();
 }, false);
 
-var ctx = myCanvas.getContext("2d");
-ctx.fillStyle = "#000000";
 
 
 var numbNodes= 0;
@@ -18,14 +15,6 @@ var numbExt=0;
 var M=[];
 var E=[];
 
-function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
-}
-
 function zeros(dimensions) {
     var array = [];
 
@@ -36,14 +25,6 @@ function zeros(dimensions) {
     return array;
 }
 
-
-function clickFunction(){//This function is called when mouse is clicked in canvas
-  pos=getMousePos(myCanvas,event)
-  //Circle
-  ctx.beginPath();
-  ctx.arc(pos.x,pos.y,20,0,2*Math.PI);
-  ctx.fill();
-}
 
 function onLoad(){
   formArea.innerHTML='How many nodes? <input type="number" id="numb"><br><button onclick="nodeQty()">Submit</button>'
