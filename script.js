@@ -136,9 +136,8 @@ function reactionQty(){
       react="Reaction" + i
       text+=react
       text+= "<select id='" + react + "d' name='"+ react+"d'>"
-      text+="<option value='x'> Roller X </option>"
-      text+="<option value='y'> Roller Y </option>"
-      text+="<option value='x and y'> Pin </option>"
+      text+="<option value='x'> X </option>"
+      text+="<option value='y'> Y </option>"
       text+="</select>"
       text+="<input type='number' id='"+ react + "node'>"
       text+="<br>"
@@ -162,14 +161,10 @@ function assignReactions(){
   //console.log("this is i" + i)
   numbMembs=Number(numbMembs) //Very important step... I learned this the hard way
     if(direction=='x'){
-      M[2*node-2][numbMembs+i-1]=1
+      M[2*node-2][numbMembs+i-1]=M[2*node-2][numbMembs+i-1]+1
     }
     else if (direction=='y') {
-      M[2*node-1][numbMembs+i-1]=1
-    }
-    else if (direction=='x and y') {
-      M[2*node-2][numbMembs+i-1]=1
-      M[2*node-1][numbMembs+i-1]=1
+      M[2*node-1][numbMembs+i-1]=M[2*node-2][numbMembs+i-1]+1
     }
   }
   text="Enter the number of external forces <input type='number' id='numb'><br><button onclick='extQty()''>Submit</button>"
@@ -195,7 +190,7 @@ function assignExtForces(){
   for(i=1; i<=numbExt; i++){
     extForce="Force "+i;
     node=Number(document.getElementById(extForce +"node").value)
-    console.log(node)
+    //console.log(node)
     value=Number(document.getElementById(extForce +"value").value)
     //console.log(value)
     angle=Number(document.getElementById(extForce +"angle").value)
@@ -203,10 +198,44 @@ function assignExtForces(){
 
     //console.log(Math.sin(angle*3.14/180))
     //console.log(-(value*Math.cos(angle*3.14/180)))
-    E[node]=-(value*Math.sin(angle*Math.PI/180))
-    E[node-1]=-(value*Math.cos(angle*Math.PI/180))
+    E[2*node-1]=-(value*Math.sin(angle*Math.PI/180))
+    E[2*node-2]=-(value*Math.cos(angle*Math.PI/180))
   }
-  console.log(E)
+  //console.log(E)
   var Mi=numeric.inv(M)
-  console.log(numeric.dot(Mi,E))
+  A=numeric.dot(Mi,E)
+  Mtable=document.getElementById('M');
+  Mtable.innerHTML=makeTableHTML(M)
+
+  text="<table border=1>"
+  for(i=1;i<=numbNodes;i++){
+    text+="<tr>"
+    text+="<th>"
+    if(i<=numbMembs){
+      text+="Member "+i
+    }
+    else{
+      text+= "Reaction " +i- numbMembs
+    }
+  }
+  text+="</th>"
+  text+="<th>"+A[i-1]+"</th>"
+  text+="</tr>"
+  text+="</table>"
+
+  Atable=document.getElementById('A');
+  Atable.innerHTML=text
+}
+function makeTableHTML(myArray) {
+    var result = "<table border=1>";
+    for(var i=0; i<myArray.length; i++) {
+        result += "<tr>";
+        for(var j=0; j<myArray[i].length; j++){
+            result += "<td>"+myArray[i][j]+"</td>";
+        }
+        result += "</tr>";
+    }
+    result += "</table>";
+
+    return result;
 }
