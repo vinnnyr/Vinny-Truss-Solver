@@ -16,6 +16,11 @@ function splitText(string, char) {
   b = string.substring(string.indexOf(char) + 1, string.length - 1)
   return [a, b];
 }
+function splitText2(string, char) {
+  a = string.substring(0, string.indexOf(char))
+  b = string.substring(string.indexOf(char) + 1, string.length)
+  return [a, b];
+}
 
 function fileReader() {
   //TO DO: make large text box, ask user to paste values... read that
@@ -31,15 +36,15 @@ function fileReader() {
 
   //Reading Node Data
   for (i = 1; i <= numbNodes; i++) {
-    node = Number(splitText(restText," ")[0])
-    restText = splitText(restText," ")[1]
+    node = Number(splitText(restText, " ")[0])
+    restText = splitText(restText, " ")[1]
     console.log(node)
     //console.log(restText)
-    xCoord = Number(splitText(restText," ")[0])
-    restText = splitText(restText," ")[1]
+    xCoord = Number(splitText(restText, " ")[0])
+    restText = splitText(restText, " ")[1]
     console.log(xCoord)
-    yCoord = Number(splitText(restText,"\n")[0])
-    restText = splitText(restText,"\n")[1]
+    yCoord = Number(splitText(restText, "\n")[0])
+    restText = splitText(restText, "\n")[1]
     console.log(yCoord)
     //restText = splitText(restText,"\n")[1]
     nodeCoord[i - 1] = [xCoord, yCoord]
@@ -49,26 +54,26 @@ function fileReader() {
   populateZeros();
 
   //To Do: Make sure all variables scraped from text are numbers, and not blank
-
-  //numbMembs=Number(splitText(restText, "\n")[0])
-  membTextToRead=textToRead.substring(textToRead.indexOf("M")+1,textToRead.indexOf("R")-1)
-  numbMembs=splitText(membTextToRead,"\n")[0]
-  restText=splitText(restText, "\n")[1]
+  membTextToRead = textToRead.substring(textToRead.indexOf("M") + 1, textToRead.indexOf("R") - 1)
+  numbMembs = splitText(membTextToRead, "\n")[0]
+  restText = splitText(restText, "\n")[1]
   console.log(numbMembs)
-  for (i=1;i<=numbMembs;i++){
-    member = Number(splitText(restText," ")[0])
-    restText = splitText(restText," ")[1]
+  //Reading Member Data
+  for (i = 1; i <= numbMembs; i++) {
+    member = Number(splitText(restText, " ")[0])
+    restText = splitText(restText, " ")[1]
     console.log("Member" + String(member))
-    nodeTo= Number(splitText(restText," ")[0])
-    restText = splitText(restText," ")[1]
+    nodeTo = Number(splitText(restText, " ")[0])
+    restText = splitText(restText, " ")[1]
     console.log(nodeTo)
-    nodeFrom= Number(splitText(restText,"\n")[0])
-    restText = splitText(restText,"\n")[1]
+    nodeFrom = Number(splitText(restText, "\n")[0])
+    restText = splitText(restText, "\n")[1]
     console.log(nodeFrom)
     membNodes[i - 1] = [nodeTo, nodeFrom]
     dx = nodeCoord[nodeTo - 1][0] - nodeCoord[nodeFrom - 1][0]
     dy = nodeCoord[nodeTo - 1][1] - nodeCoord[nodeFrom - 1][1]
     length = Math.sqrt(dx * dx + dy * dy)
+    console.log([dx,dy,length])
     //Now we must populate M with dx,dy, and length values
     //console.log(length)
     M[2 * nodeFrom - 2][i - 1] = dx / length
@@ -77,6 +82,49 @@ function fileReader() {
     M[2 * nodeTo - 1][i - 1] = -dy / length
     //console.log(M)
   }
+  //Reading Reaction Data
+  reactionTextToRead = textToRead.substring(textToRead.indexOf("R") + 1, textToRead.indexOf("E"))
+  numbReacts = reactionTextToRead[0];
+  restText = reactionTextToRead.substring(reactionTextToRead.indexOf("\n") + 1, reactionTextToRead.length) //idk why it isnts -1
+  console.log(numbReacts)
+  //To Do: Ensure that numbReacts+numbMembs==numbNodes*2
+  for (i = 1; i <= numbReacts; i++) {
+    reaction = splitText2(restText, " ")[0]
+    restText = splitText2(restText, " ")[1]
+    console.log(reaction)
+    node = splitText2(restText, " ")[0]
+    restText = splitText2(restText, " ")[1]
+    console.log(node)
+    direction = splitText2(restText, "\n")[0]
+    restText = splitText2(restText, "\n")[1]
+    numbMembs = Number(numbMembs) //Very important step... I learned this the hard way
+    console.log(direction)
+    if (direction == 'x' || direction == 'X') {
+      M[2 * node - 2][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
+    } else if (direction == 'y' || direction=='Y') {
+      M[2 * node - 1][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
+    }
+  }
 
-//end of Function fileReader()
+  //Reading External Force Data
+  externalTextToRead= splitText2(textToRead,("E"))[1]
+  console.log(externalTextToRead)
+  numbExt=splitText2(externalTextToRead,"\n")[0]
+  restText=splitText2(externalTextToRead,"\n")[1]
+  for(i=1;i<=numbExt;i++){
+    node=splitText2(restText," ")[0]
+    restText=splitText2(restText," ")[1]
+    console.log(node)
+    value=splitText2(restText," ")[0]
+    restText=splitText2(restText," ")[1]
+    console.log(value)
+    angle=splitText2(restText,"\n")[0]
+    restText=splitText2(restText,"\n")[1]
+    console.log(angle)
+
+    E[2 * node - 1] = -(value * Math.sin(angle * Math.PI / 180))
+    E[2 * node - 2] = -(value * Math.cos(angle * Math.PI / 180))
+}
+solveAndDisplay();
+  //end of Function fileReader()
 }

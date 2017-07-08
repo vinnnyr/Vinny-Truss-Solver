@@ -196,6 +196,9 @@ function assignExtForces() {
     E[2 * node - 2] = -(value * Math.cos(angle * Math.PI / 180))
   }
   //console.log(E)
+  solveAndDisplay()
+}
+function solveAndDisplay(){
   var Mi = numeric.inv(M)
   A = numeric.dot(Mi, E)
   //Mtable=document.getElementById('M');
