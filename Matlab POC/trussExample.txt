@@ -1,1 +1,11 @@
-41 10 10 2 0 10 3 0 0 4 10 0 51 1 2 2 2 3 3 2 4 4 3 4 5 4 131 3 Y 2 4 Y 3 4 X11 1000 180
+41 10 10 
+2 0 10 
+3 0 0 
+4 10 0 
+51 1 2 
+2 2 3 
+3 2 4 
+4 3 4 
+5 4 131 3 Y 
+2 4 Y 
+3 4 X11 1000 180%  The number of nodes in the truss%  Node number, X coordinate, Y coordinate%     for each node%  The number of elements in the truss%  Element number, Node from, Node to%     for each element%  The number of constraints in the truss%  Constraint number, Node, direction%     for each constraint%  The number of external forces%  Node number, Force magnitude, Force Direction%     for each external force
