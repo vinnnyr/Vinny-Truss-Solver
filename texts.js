@@ -8,7 +8,7 @@
 // var E = [];
 
 function createButton() {
-  formArea.innerHTML = '<form id="myForm"><textarea form="myForm" id="fileIn"  value="Paste truss here" rows="4" cols="50"></textarea> <br> <input type="button" id="fileSubmit" onclick="fileReader()"></input></form>'
+  formArea.innerHTML = '<form id="myForm"><textarea form="myForm" id="fileIn"  value="Paste truss here" rows="10" cols="50"></textarea> <br> <input type="button" id="fileSubmit" onclick="fileReader()">Submit</input></form>'
 }
 
 function splitText(string, char) {
@@ -99,6 +99,12 @@ function fileReader() {
     restText = splitText2(restText, "\n")[1]
     numbMembs = Number(numbMembs) //Very important step... I learned this the hard way
     console.log(direction)
+
+    reacts[i-1]=[]
+    reacts[i-1][0]=i
+    reacts[i-1][1]=node
+    reacts[i-1][2]=direction
+    
     if (direction == 'x' || direction == 'X') {
       M[2 * node - 2][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
     } else if (direction == 'y' || direction=='Y') {
@@ -121,10 +127,22 @@ function fileReader() {
     angle=splitText2(restText,"\n")[0]
     restText=splitText2(restText,"\n")[1]
     console.log(angle)
+    externals[i-1]=[];
+    externals[i-1][0]=node;
+    externals[i-1][1]=value;
+    externals[i-1][2]=angle;
 
     E[2 * node - 1] = -(value * Math.sin(angle * Math.PI / 180))
     E[2 * node - 2] = -(value * Math.cos(angle * Math.PI / 180))
 }
-solveAndDisplay();
+numbMembs=Number(numbMembs);
+numbReacts=Number(numbReacts);
+numbNodes=Number(numbNodes);
+if(2*numbNodes==numbMembs+numbReacts){
+  solveAndDisplay();
+}
+else{
+  formArea.innerHTML="<h3>Some error happened. Please make sure the input is correct, or try again by refreshing the page </h3>"
+}
   //end of Function fileReader()
 }

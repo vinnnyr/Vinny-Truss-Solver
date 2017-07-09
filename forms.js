@@ -10,6 +10,8 @@ var nodeCoord = [];
 var numbMembs = 0;
 var membNodes = [];
 var numbReacts = 0;
+var reacts=[];
+var externals=[];
 var numbExt = 0;
 var M = [];
 var E = [];
@@ -137,6 +139,9 @@ function reactionQty() {
     text += "<br>"
   }
   text += "<button onclick='assignReactions()'>Submit</button>"
+  numbNodes=Number(numbNodes);
+  numbReacts=Number(numbReacts);
+  numbMembs=Number(numbMembs);
   if (numbNodes * 2 == numbReacts + numbMembs) {
     formArea.innerHTML = text;
   } else {
@@ -153,12 +158,17 @@ function assignReactions() {
     node = document.getElementById(react + "node")
     node = node.value
     numbMembs = Number(numbMembs) //Very important step... I learned this the hard way
+    reacts[i-1]=[]
+    reacts[i-1][0]=i
+    reacts[i-1][1]=node
+    reacts[i-1][2]=direction
     if (direction == 'x') {
       M[2 * node - 2][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
     } else if (direction == 'y') {
       M[2 * node - 1][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
     }
   }
+
   text = "Enter the number of external forces <input type='number' id='numb'><br><button onclick='extQty()''>Submit</button>"
   formArea.innerHTML = text;
 }
@@ -189,7 +199,10 @@ function assignExtForces() {
     //console.log(value)
     angle = Number(document.getElementById(extForce + "angle").value)
     //console.log(angle)
-
+    externals[i-1]=[];
+    externals[i-1][0]=node;
+    externals[i-1][1]=value;
+    externals[i-1][2]=angle;
     //console.log(Math.sin(angle*3.14/180))
     //console.log(-(value*Math.cos(angle*3.14/180)))
     E[2 * node - 1] = -(value * Math.sin(angle * Math.PI / 180))
@@ -221,10 +234,52 @@ function solveAndDisplay(){
   text += "</table>"
 
   Atable = document.getElementById('A');
-  formArea.innerHTML = ""
+  formArea.innerHTML ="<br> Press Button to recieve a log of the truss you had created <button onclick='textOutput()' type='submit' >View Log</button>"
   Atable.innerHTML = text
 }
-
+function textOutput(){
+  out="";
+  //node block
+  nodeBlock="N"+String(numbNodes)+"\n";
+  for(i=1; i <=numbNodes; i ++){
+    nodeBrick=String(i)+" "+String(nodeCoord[i-1][0])+" "+String(nodeCoord[i-1][1])+"\n"
+    nodeBlock=nodeBlock+nodeBrick;
+  }
+  out=out+nodeBlock
+  console.log(out)
+  //memb block
+  membBlock="M"+String(numbMembs)+"\n";
+  for(i=1;i<=numbMembs;i++){
+    membBrick=i+" "+String(membNodes[i-1][0])+" "+String(membNodes[i-1][1])+"\n"
+    membBlock=membBlock+membBrick;
+  }
+  out=out+membBlock
+  console.log(out)
+  //reaction block
+  reactBlock="R"+String(numbReacts)+"\n";
+  for(i=1;i<=numbReacts;i++){
+    reactBrick=String(reacts[i-1][0])+" "+String(reacts[i-1][1])+" "+String(reacts[i-1][2])+"\n";
+    reactBlock=reactBlock+reactBrick;
+  }
+  out=out+reactBlock
+  console.log(out)
+  //external block
+  extBlock="E"+String(numbExt)+"\n";
+  for(i=1;i<=numbExt;i++){
+    extBrick=String(externals[i-1][0])+" "+String(externals[i-1][1])+" "+String(externals[i-1][2])+"\n"
+    extBlock=extBlock+extBrick;
+  }
+  out=out+extBlock
+  console.log(out)
+  showNodeOut(out)
+}
+function showNodeOut(out){
+  html='<textarea form="myForm" id="fileOut" '
+  html+='rows="10" cols="50">'
+  html+=out
+  html+='</textarea>'
+  formArea.innerHTML = html
+}
 function makeTableHTML(myArray) {
   var result = "<table>";
   for (var i = 0; i < myArray.length; i++) {
