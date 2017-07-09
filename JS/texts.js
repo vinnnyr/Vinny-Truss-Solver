@@ -16,6 +16,7 @@ function splitText(string, char) {
   b = string.substring(string.indexOf(char) + 1, string.length - 1)
   return [a, b];
 }
+
 function splitText2(string, char) {
   a = string.substring(0, string.indexOf(char))
   b = string.substring(string.indexOf(char) + 1, string.length)
@@ -73,7 +74,7 @@ function fileReader() {
     dx = nodeCoord[nodeTo - 1][0] - nodeCoord[nodeFrom - 1][0]
     dy = nodeCoord[nodeTo - 1][1] - nodeCoord[nodeFrom - 1][1]
     length = Math.sqrt(dx * dx + dy * dy)
-    console.log([dx,dy,length])
+    console.log([dx, dy, length])
     //Now we must populate M with dx,dy, and length values
     //console.log(length)
     M[2 * nodeFrom - 2][i - 1] = dx / length
@@ -100,49 +101,48 @@ function fileReader() {
     numbMembs = Number(numbMembs) //Very important step... I learned this the hard way
     console.log(direction)
 
-    reacts[i-1]=[]
-    reacts[i-1][0]=i
-    reacts[i-1][1]=node
-    reacts[i-1][2]=direction
-    
+    reacts[i - 1] = []
+    reacts[i - 1][0] = i
+    reacts[i - 1][1] = node
+    reacts[i - 1][2] = direction
+
     if (direction == 'x' || direction == 'X') {
       M[2 * node - 2][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
-    } else if (direction == 'y' || direction=='Y') {
+    } else if (direction == 'y' || direction == 'Y') {
       M[2 * node - 1][numbMembs + i - 1] = M[2 * node - 2][numbMembs + i - 1] + 1
     }
   }
 
   //Reading External Force Data
-  externalTextToRead= splitText2(textToRead,("E"))[1]
+  externalTextToRead = splitText2(textToRead, ("E"))[1]
   console.log(externalTextToRead)
-  numbExt=splitText2(externalTextToRead,"\n")[0]
-  restText=splitText2(externalTextToRead,"\n")[1]
-  for(i=1;i<=numbExt;i++){
-    node=splitText2(restText," ")[0]
-    restText=splitText2(restText," ")[1]
+  numbExt = splitText2(externalTextToRead, "\n")[0]
+  restText = splitText2(externalTextToRead, "\n")[1]
+  for (i = 1; i <= numbExt; i++) {
+    node = splitText2(restText, " ")[0]
+    restText = splitText2(restText, " ")[1]
     console.log(node)
-    value=splitText2(restText," ")[0]
-    restText=splitText2(restText," ")[1]
+    value = splitText2(restText, " ")[0]
+    restText = splitText2(restText, " ")[1]
     console.log(value)
-    angle=splitText2(restText,"\n")[0]
-    restText=splitText2(restText,"\n")[1]
+    angle = splitText2(restText, "\n")[0]
+    restText = splitText2(restText, "\n")[1]
     console.log(angle)
-    externals[i-1]=[];
-    externals[i-1][0]=node;
-    externals[i-1][1]=value;
-    externals[i-1][2]=angle;
+    externals[i - 1] = [];
+    externals[i - 1][0] = node;
+    externals[i - 1][1] = value;
+    externals[i - 1][2] = angle;
 
     E[2 * node - 1] = -(value * Math.sin(angle * Math.PI / 180))
     E[2 * node - 2] = -(value * Math.cos(angle * Math.PI / 180))
-}
-numbMembs=Number(numbMembs);
-numbReacts=Number(numbReacts);
-numbNodes=Number(numbNodes);
-if(2*numbNodes==numbMembs+numbReacts){
-  solveAndDisplay();
-}
-else{
-  formArea.innerHTML="<h3>Some error happened. Please make sure the input is correct, or try again by refreshing the page </h3>"
-}
+  }
+  numbMembs = Number(numbMembs);
+  numbReacts = Number(numbReacts);
+  numbNodes = Number(numbNodes);
+  if (2 * numbNodes == numbMembs + numbReacts) {
+    solveAndDisplay();
+  } else {
+    formArea.innerHTML = "<h3>Some error happened. Please make sure the input is correct, or try again by refreshing the page </h3>"
+  }
   //end of Function fileReader()
 }
