@@ -1,5 +1,6 @@
 f = document.getElementById("Forms");
 t = document.getElementById("Txt file");
+man=document.getElementById("managerArea")
 
 function choosePath() {
   if (f.checked) {
@@ -7,4 +8,5 @@ function choosePath() {
   } else if (t.checked) {
     createButton();
   }
+  man.innerHTML=""
 }

@@ -6,9 +6,10 @@
 // var numbExt = 0;
 // var M = [];
 // var E = [];
+var formArea = document.getElementById("formArea");
 
 function createButton() {
-  formArea.innerHTML = '<form id="myForm"><textarea form="myForm" id="fileIn"  value="Paste truss here" rows="10" cols="50"></textarea> <br> <input type="button" id="fileSubmit" onclick="fileReader()">Submit</input></form>'
+  formArea.innerHTML = '<form id="myForm"><textarea form="myForm" id="fileIn"  value="Paste truss here" rows="10" cols="50"></textarea> <br> <button type="button" id="fileSubmit" class="btn btn-default" onclick="fileReader()">Submit</button></form>'
 }
 
 function splitText(string, char) {

@@ -36,13 +36,19 @@ function nodeQty() {
 
   //console.log(M)
 
-  var text = "Please enter the x and y coordinates of each node <br><br>"
+  var text = "<h4>Please enter the x and y coordinates of each node:</h4>"
+  text+="<table><tr><th>Node</th><th><center>X</center></th><th><center>Y</center></th></tr>"
   for (i = 1; i <= numbNodes; i++) {
+    text+="<tr>"
     node = "Node " + i
+    text+="<td>"
     text += node
+    text+="</td><td>"
     text += "<input type='number' id='" + node + "x'>"
+    text+="</td><td>"
     text += "<input type='number' id='" + node + "y'>"
-    text += "<br>"
+    text+="</td>"
+    text+="</tr>"
   }
   text += "<button onclick='nodeCoordinates()' type='submit' >Submit</button>"
   formArea.innerHTML = text
@@ -55,7 +61,7 @@ function populateZeros() {
 
 function nodeCoordinates() { // called at the end of nodeQty
   var nodeArea = document.getElementById("nodes");
-  pText = "<h2>Nodes</h2><table style='width=100%'><tr><th>Node</th><th>Coordinates</th></tr>"
+  pText = "<h4>Nodes</h4><table style='width=100%'><tr><th>Node</th><th>Coordinates</th></tr>"
   for (i = 1; i <= numbNodes; i++) {
     node = "Node " + i
     xCoord = document.getElementById(node + "x").value
@@ -63,7 +69,7 @@ function nodeCoordinates() { // called at the end of nodeQty
     nodeCoord[i - 1] = [xCoord, yCoord]
     pText += "<tr>" //pText updates the table in the "main" id
     pText += "<th>" + node + "</th>"
-    pText += "<th>" + "(" + xCoord + "," + yCoord + ")</th>"
+    pText += "<th><center>" + "(" + xCoord + "," + yCoord + ")</center></th>"
     pText += "</tr>"
   }
   text = "How many members? <input type='number' id='numb'><br><button onclick='elementQty()' type='submit' '>Submit</button>"
@@ -76,13 +82,19 @@ function elementQty() {
   numbMembs = document.getElementById("numb");
   numbMembs = numbMembs.value //This is the number of members
   //TO DO: check if numbMembs is viable with numbNodes
-  var text = ""
+  var text = "<h4>Please enter the node to and node from for each member</h4>"
+  text+="<table><tr><th>Member</th><th><center>Node To</center></th><th><center>Node from</center></th></tr>"
   for (i = 1; i <= numbMembs; i++) {
+    text+="<tr>"
+    text+="<td>"
     memb = "Member " + i
     text += memb
+    text+="</td><td>"
     text += "<input type='number' id='" + memb + "to'>"
+    text+="</td><td>"
     text += "<input type='number' id='" + memb + "from'>"
-    text += "<br>"
+    text+="</td>"
+    text += "</tr>"
   }
   text += "<button onclick='memberPopulate() ' type='submit'>Submit</button>"
   if (numbMembs >= numbNodes) { //numb membs CANNOT be less than numb Nodes
@@ -94,7 +106,7 @@ function elementQty() {
 
 function memberPopulate() {
   var membArea = document.getElementById("membs");
-  pText = "<h2>Members</h2><table style='width=100%'><tr><th>Member</th><th>Node To</th><th>Node From</th></tr>"
+  pText = "<h4>Members</h4><table style='width=100%'><tr><th>Member</th><th>Node To</th><th>Node From</th></tr>"
   for (i = 1; i <= numbMembs; i++) {
     memb = "Member " + i
     nodeTo = document.getElementById(memb + "to").value
@@ -113,8 +125,8 @@ function memberPopulate() {
     //not sure if that's right.. check for error as we go further^
 
     pText += "<tr>"
-    pText += "<th>" + memb + "</th>"
-    pText += "<th>" + nodeTo + "</th>" + "<th>" + nodeFrom + "</th>"
+    pText += "<td><center>" + memb + "</center></td>"
+    pText += "<td><center>" + nodeTo + "</center></td>" + "<td><center>" + nodeFrom + "</center></td>"
     pText += "</tr>"
   }
   pText += "</table>"

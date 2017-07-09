@@ -3,41 +3,59 @@
 
 <head>
   <meta charset="utf-8" />
+  <title> Truss Me </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<title> Truss Me </title>
 
 <body>
-  <p id="Main">
-    <h1>Truss Solver</h1>
-    <table style='width=100%'>
-      <tr>
-        <th>
-          <p id="nodes"></p>
-        </th>
-        <th>
-          <p id="membs"></p>
-        </th>
-        <th>
-          <p id="M"></p>
-        </th>
-        <th>
-          <p id="A"></p>
-        </th>
-      </tr>
-    </table>
-  </p>
-  <p id="formArea">
-    <input type="radio" id="Txt file"> Text File </input><br>
-    <input type="radio" id="Forms"> No Text File </input><br>
-    <input type="submit" id="manager" onclick="choosePath()"></input>
-  </p>
-  <br>
-  <canvas id="myCanvas" width="1200" height="1000"></canvas>
-  </center>
-  <script type="text/javascript" src="JS/manager.js"></script>
-  <script type="text/javascript" src="JS/numeric.js"></script>
-  <script type="text/javascript" src="JS/forms.js"></script>
-  <script type="text/javascript" src="JS/texts.js"></script>
+  <div class="jumbotron text-center">
+    <h1>Truss Me</h1>
+    <p>A truss solver</p>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4">
+        <p id="formArea"></p>
+        <p id="Main">
+          <table style='width=100%'>
+            <tr>
+              <th>
+                <p id="nodes"></p>
+              </th>
+              <th>
+                <p id="membs"></p>
+              </th>
+              <th>
+                <p id="M"></p>
+              </th>
+              <th>
+                <p id="A"></p>
+              </th>
+            </tr>
+          </table>
+        </p>
+        <div id="managerArea">
+          <h4> Input Type </h4>
+          <input type="radio" id="Txt file"> Text File </input><br>
+          <input type="radio" id="Forms"> No Text File </input><br>
+          <input type="submit" id="manager" onclick="choosePath()"></input>
+        </div>
+      </div>
+      <div class="col-sm-4">
+      </div>
+      <div class="col-sm-4">
+        <br>
+        <canvas id="myCanvas"></canvas>
+        </center>
+      </div>
+    </div>
+    <script type="text/javascript" src="JS/manager.js"></script>
+    <script type="text/javascript" src="JS/numeric.js"></script>
+    <script type="text/javascript" src="JS/forms.js"></script>
+    <script type="text/javascript" src="JS/texts.js"></script>
 </body>
 
 </html>
