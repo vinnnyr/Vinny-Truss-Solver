@@ -50,6 +50,7 @@ function canvasDrawer(){//only to be called after truss is solved
   for(i=1;i<=numbNodes;i++){
     x=nodeCoord[i-1][0]*scale/2 + width/10;
     y=height-nodeCoord[i-1][1]*scale/2 - height/10;
+    scaledNodeCoord[i-1]=[x,y];
     ctx.beginPath();
     ctx.arc(x,y,10,0,2*Math.PI);
     ctx.stroke();
@@ -62,12 +63,45 @@ function canvasDrawer(){//only to be called after truss is solved
     nodes=membNodes[i];
     nA=nodes[0];
     nB=nodes[1];
-    aCoord=[nodeCoord[nA-1][0]*scale/2 + width/10,height-nodeCoord[nA-1][1]*scale/2-height/10]
-    bCoord=[nodeCoord[nB-1][0]*scale/2 + width/10,height-nodeCoord[nB-1][1]*scale/2-height/10]
-
+    //aCoord=[nodeCoord[nA-1][0]*scale/2 + width/10,height-nodeCoord[nA-1][1]*scale/2-height/10]
+    //bCoord=[nodeCoord[nB-1][0]*scale/2 + width/10,height-nodeCoord[nB-1][1]*scale/2-height/10]
+    aCoord=scaledNodeCoord[nA-1];
+    bCoord=scaledNodeCoord[nB-1];
     ctx.beginPath();
     ctx.moveTo(aCoord[0],aCoord[1])
     ctx.lineTo(bCoord[0],bCoord[1])
     ctx.stroke();
   }
+  //drawImage('arrow.png',[100,200],90)
+  //drawImage('https://mdn.mozillademos.org/files/5397/rhino.jpg',aCoord)
+
+  //Drawing of the reactions
+  for(i=1;i<=numbReacts;i++){
+    mat=reacts[i-1];
+    //console.log(reacts[i-1])
+    //console.log(mat);
+    pos=scaledNodeCoord[mat[1]-1]
+    console.log(pos)
+    direction=mat[2]
+    if (direction == 'x' || direction=='X') {
+      drawImage('arrow.png',pos,90)
+    }
+    else if(direction=='y' || direction=='Y'){
+      drawImage('arrow.png',pos,0)
+    }
+  }
+}
+
+function drawImage(imgPath,pos,theta){
+  var imageObj = new Image();
+      imageObj.onload = function() {
+        ctx.save();
+        //console.log(theta*Math.PI/180)
+        ctx.translate(pos[0]-5,pos[1]+5)
+        ctx.rotate(theta*Math.PI/180)
+        ctx.translate(-pos[0]+5,-pos[1]-5)
+        ctx.drawImage(imageObj, pos[0]-5,pos[1]+5,10,15);
+        ctx.restore();
+      }
+      imageObj.src = imgPath;
 }

@@ -7,6 +7,7 @@ var formArea = document.getElementById("formArea");
 
 var numbNodes = 0;
 var nodeCoord = [];
+var scaledNodeCoord=[];
 var numbMembs = 0;
 var membNodes = [];
 var numbReacts = 0;
@@ -241,7 +242,7 @@ function solveAndDisplay() {
     }
     text += "</td>"
     //console.log(String(A[i-1]))
-    text += "<td>" + String(A[i - 1]) + "</td>"
+    text += "<td>" + String((Math.round(Number(A[i - 1])*100)/100))+ "</td>"//  7-15-17 rounded to 2 dec
     text += "</tr>"
   }
   text += "</table>"
