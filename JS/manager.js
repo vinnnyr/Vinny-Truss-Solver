@@ -90,6 +90,12 @@ function canvasDrawer(){//only to be called after truss is solved
       drawImage('arrow.png',pos,0)
     }
   }
+
+  for(i=1;i<=externals.length;i++){
+    ee=externals[i-1];
+    pos=scaledNodeCoord[ee[0]-1];
+    drawImage('arrow.png',pos,Number(ee[2])+90)
+  }
 }
 
 function drawImage(imgPath,pos,theta){
