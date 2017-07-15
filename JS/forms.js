@@ -260,7 +260,7 @@ function textOutput() {
     nodeBlock = nodeBlock + nodeBrick;
   }
   out = out + nodeBlock
-  console.log(out)
+  //console.log(out)
   //memb block
   membBlock = "M" + String(numbMembs) + "\n";
   for (i = 1; i <= numbMembs; i++) {
@@ -268,7 +268,7 @@ function textOutput() {
     membBlock = membBlock + membBrick;
   }
   out = out + membBlock
-  console.log(out)
+  //console.log(out)
   //reaction block
   reactBlock = "R" + String(numbReacts) + "\n";
   for (i = 1; i <= numbReacts; i++) {
@@ -276,7 +276,7 @@ function textOutput() {
     reactBlock = reactBlock + reactBrick;
   }
   out = out + reactBlock
-  console.log(out)
+  //console.log(out)
   //external block
   extBlock = "E" + String(numbExt) + "\n";
   for (i = 1; i <= numbExt; i++) {

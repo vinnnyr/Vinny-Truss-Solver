@@ -39,11 +39,11 @@ function canvasDrawer(){//only to be called after truss is solved
 
   scale=target/delta
 
-  console.log(maxs)
-  console.log(mins)
-  console.log(sizes)
-  console.log(deltas)
-  console.log(scale)
+  // console.log(maxs)
+  // console.log(mins)
+  // console.log(sizes)
+  // console.log(deltas)
+  // console.log(scale)
 
 
   //Drawing of the nodes
@@ -53,7 +53,21 @@ function canvasDrawer(){//only to be called after truss is solved
     ctx.beginPath();
     ctx.arc(x,y,10,0,2*Math.PI);
     ctx.stroke();
-    ctx.font = "30px Arial";
-    ctx.fillText("Node" + String(i),x,y);
+    ctx.fill();
+    ctx.font = "12px Arial";
+    ctx.fillText("Node" + String(i),x+width/40,y);
+  }
+  //Drawing of the members
+  for(i=0;i<numbMembs;i++){
+    nodes=membNodes[i];
+    nA=nodes[0];
+    nB=nodes[1];
+    aCoord=[nodeCoord[nA-1][0]*scale/2 + width/10,height-nodeCoord[nA-1][1]*scale/2-height/10]
+    bCoord=[nodeCoord[nB-1][0]*scale/2 + width/10,height-nodeCoord[nB-1][1]*scale/2-height/10]
+
+    ctx.beginPath();
+    ctx.moveTo(aCoord[0],aCoord[1])
+    ctx.lineTo(bCoord[0],bCoord[1])
+    ctx.stroke();
   }
 }
